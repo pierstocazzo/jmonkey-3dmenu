@@ -68,6 +68,7 @@ public class Panel extends MenuElement
                 // If something was clicked, fire its process method.
                 if (nodeAimed != null)
                 {
+                    nodeAimed.worldToLocal(contactPoint, contactPoint);
                     nodeAimed.processClick(pressedOrReleased, contactPoint);
                 }
                 // Also store the node as the currently focused one.
@@ -93,30 +94,35 @@ public class Panel extends MenuElement
         /* First of all, only process input if there's no transition running. */
         if (transitions.isEmpty() && clickedElement != null)
         {
-            // If some component is indeed dragged, get the cursor position on the Z = 0 plane.
+            
+            clickedElement.processDrag(getMousePosition(clickedElement));
+        }
+    }
 
-            Vector2f click2d = application.getInputManager().getCursorPosition();
-            // Then make it 3D and absolute.
-            Vector3f click3d = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f);
-            // Finally, get the direction.
-            Vector3f dir = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
+    /**
+     * Processes a mouse wheel turn.
+     */
+    public void processWheel(int step)
+    {
+        /* First of all, only process input if there's no transition running. */
+        if (transitions.isEmpty())
+        {
+            Vector3f contactPoint = new Vector3f();
+            Vector3f contactNormal = new Vector3f();
 
-            // Next, compute intersection of the ray with the element *local* Z=0 plane.
-            // To do that simply, subtract from the click3D position "enough of the
-            // direction vector" to nullify its z-component, when converted to the
-            // slider's local space.
-            clickedElement.worldToLocal(click3d, click3d);
-            clickedElement.worldToLocal(dir, dir).normalizeLocal();
+            // First create a list of all leaf menu elements, to avoid calling 
+            // this method on subpanels and raytracing several times.
+            ArrayList<MenuElement> candidates = new ArrayList<>();
+            findLeaves(candidates);
 
-            // If the direction along Z is zero, tweak it a bit.
-            if (Math.abs(dir.z) < 0.0000001f)
+            // Then cast a ray to find which element is clicked - if there is one.
+            MenuElement nodeAimed = (MenuElement) getNodeClicked(application.getCamera(), contactPoint, contactNormal, candidates.toArray(new MenuElement[0]));
+
+            // If something was aimed, fire its process method.
+            if (nodeAimed != null)
             {
-                dir.z = Math.signum(dir.z) * 0.0000001f;
+                nodeAimed.processWheel(step);
             }
-
-            click3d.subtractLocal(dir.multLocal(click3d.z / dir.z));
-
-            clickedElement.processDrag(click3d);
         }
     }
 
@@ -209,6 +215,12 @@ public class Panel extends MenuElement
             }
 
             transitions.removeAll(toRemove);
+        }
+        
+        // Finally, update all elements.
+        for(MenuElement e : menuElements)
+        {
+            e.update(tpf);
         }
     }
 
@@ -307,6 +319,32 @@ public class Panel extends MenuElement
         }
     }
 
+    private Vector3f getMousePosition(MenuElement clickedElement)
+    {
+        // If some component is indeed dragged, get the cursor position on the Z = 0 plane.
+            Vector2f click2d = application.getInputManager().getCursorPosition();
+            // Then make it 3D and absolute.
+            Vector3f click3d = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f);
+            // Finally, get the direction.
+            Vector3f dir = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
+
+            // Next, compute intersection of the ray with the element *local* Z=0 plane.
+            // To do that simply, subtract from the click3D position "enough of the
+            // direction vector" to nullify its z-component, when converted to the
+            // slider's local space.
+            clickedElement.worldToLocal(click3d, click3d);
+            clickedElement.worldToLocal(dir, dir).normalizeLocal();
+
+            // If the direction along Z is zero, tweak it a bit.
+            if (Math.abs(dir.z) < 0.0000001f)
+            {
+                dir.z = Math.signum(dir.z) * 0.0000001f;
+            }
+
+            click3d.subtractLocal(dir.multLocal(click3d.z / dir.z));
+            return click3d;
+    }
+
     /**
      * This global listener wraps the analog and action listeners for the scene.
      * It then redirects the events to all menu elements and their listeners.
@@ -332,9 +370,10 @@ public class Panel extends MenuElement
                 int step = 1;
                 switch (name)
                 {
-                    case "MouseWheelUp":
-                        step = -step;
                     case "MouseWheelDown":
+                        step = -step;
+                    case "MouseWheelUp":
+                        processWheel(step);
                         break;
                     case "MouseLeft":
                     case "MouseRight":
@@ -384,6 +423,7 @@ public class Panel extends MenuElement
         }
     }
 
+    @Override
     protected void findLeaves(ArrayList<MenuElement> candidates)
     {
         for (MenuElement element : menuElements)
@@ -391,14 +431,14 @@ public class Panel extends MenuElement
             element.findLeaves(candidates);
         }
     }
-
+    
     @Override
     public void setMaterial(Material material)
     {
-this.material = material;
+        this.material = material;
         for (MenuElement element : menuElements)
         {
-                element.setMaterial(material);
+            element.setMaterial(material);
         }
     }
 
