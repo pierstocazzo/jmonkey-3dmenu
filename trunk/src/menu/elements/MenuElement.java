@@ -15,34 +15,34 @@ import java.util.ArrayList;
  */
 public abstract class MenuElement extends Node
 {
+
     protected Material material = null;
-    
+
     /**
      * Processes a click.
      *
      * @param pressedOrReleased If true, it's a click; else it's a button
      * release.
      */
-    public void processClick(boolean pressedOrReleased,Vector3f cursorPosition)
+    public void processClick(boolean pressedOrReleased, Vector3f cursorPosition)
     {
     }
 
-    ;
     public void processKey()
     {
     }
 
-    ;
     public void processDrag(Vector3f cursorPosition)
     {
     }
 
-    ;
-    public void update(float tpf)
+    public void processWheel(int step)
     {
     }
 
-    ;
+    public void update(float tpf)
+    {
+    }
 
     abstract protected Vector3f getLocalMinBound();
 

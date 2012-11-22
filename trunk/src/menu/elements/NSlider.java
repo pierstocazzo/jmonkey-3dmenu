@@ -171,6 +171,15 @@ public class NSlider extends MenuElement
             setDraggedValue(value);
         }
     }
+    
+     @Override
+    public void processWheel(int step)
+    {
+        if (draggedValue != -1)
+        {       
+            setDraggedValue(values[draggedValue]  + step *0.05f);
+        }
+    }
 
     /**
      * Refreshes the box positions according to the selected values.

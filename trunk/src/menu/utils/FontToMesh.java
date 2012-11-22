@@ -26,9 +26,9 @@ import javax.media.j3d.GeometryArray;
 public class FontToMesh
 {
     // Usual fonts.
+
     public final static FontToMesh standardExtrudedFont = new FontToMesh("Arial", true);
     public final static FontToMesh standardFlatFont = new FontToMesh("Arial", false);
-    
     // The ratio used to increase distance between characters.
     public final static float spacingRatio = 1.05f;
     // The Java3D 3DFont.
@@ -140,8 +140,7 @@ public class FontToMesh
                 frontVertices.add(new Vector3f(coords[i + 3], coords[i + 4], coords[i + 5]));
                 frontVertices.add(new Vector3f(coords[i + 6], coords[i + 7], coords[i + 8]));
 
-            }
-            else if (extruded)
+            } else if (extruded)
             {
                 if (coords[i + 2] < 0.1f && coords[i + 5] < 0.1f && coords[i + 8] < 0.1f)
                 {
@@ -149,15 +148,14 @@ public class FontToMesh
                     backVertices.add(new Vector3f(coords[i], coords[i + 1], coords[i + 2]));
                     backVertices.add(new Vector3f(coords[i + 3], coords[i + 4], coords[i + 5]));
                     backVertices.add(new Vector3f(coords[i + 6], coords[i + 7], coords[i + 8]));
-                }
-                else
+                } else
                 {
                     // If the Zs are not equal, put the triangle in the side category.
                     sideVertices.add(new Vector3f(coords[i], coords[i + 1], coords[i + 2]));
                     sideVertices.add(new Vector3f(coords[i + 3], coords[i + 4], coords[i + 5]));
                     sideVertices.add(new Vector3f(coords[i + 6], coords[i + 7], coords[i + 8]));
 
-                    // Also register the normals.
+                    // Also save the normals.
                     sideNormals.add(new Vector3f(normalCoords[i], normalCoords[i + 1], normalCoords[i + 2]));
                     sideNormals.add(new Vector3f(normalCoords[i + 3], normalCoords[i + 4], normalCoords[i + 5]));
                     sideNormals.add(new Vector3f(normalCoords[i + 6], normalCoords[i + 7], normalCoords[i + 8]));
@@ -194,8 +192,19 @@ public class FontToMesh
         ArrayList<Integer> triangles = MeshUtils.trianglesFromVerticesList(frontVertices, normals);
         Mesh mesh = new Mesh();
 
-        // Vertices
-        Vector3f[] verticesArray = frontVertices.toArray(new Vector3f[0]);
+        // Vertices. 
+       Vector3f[] verticesArray = frontVertices.toArray(new Vector3f[0]);
+
+        // If the font is extruded, push it back a little to make it
+        // extruded outwards of the users view, so that all fonts are on the 
+        //same plane.
+        if (extruded)
+        {
+           for(Vector3f v : verticesArray)
+           {
+               v.z -= 0.2f;
+           }
+        }
         // Normals
         Vector3f[] normalsArray = normals.toArray(new Vector3f[0]);
 
@@ -228,7 +237,9 @@ public class FontToMesh
         return mesh;
     }
 
-    /** Load font from a resource file, ie in a source package. */
+    /**
+     * Load font from a resource file, ie in a source package.
+     */
     private static Font loadFont(String name)
     {
         Font f = null;
@@ -236,8 +247,7 @@ public class FontToMesh
         {
             InputStream is = FontToMesh.class.getResourceAsStream(name);
             f = Font.createFont(Font.TRUETYPE_FONT, is);
-        }
-        catch (FontFormatException | IOException ex)
+        } catch (FontFormatException | IOException ex)
         {
             Logger.getLogger(FontToMesh.class.getName()).log(Level.SEVERE, null, ex);
         }
