@@ -10,7 +10,7 @@ import menu.elements.Panel;
 public class SlideTransition extends Transition
 {
     public enum Direction
-    {
+    { 
         LEFT, RIGHT, UP, DOWN
     };
     
@@ -21,6 +21,7 @@ public class SlideTransition extends Transition
     {
         super(source, destination);
         this.direction = direction;
+        
         // Save the source position.
         origin = new Vector3f(source.getLocalTranslation());
 
@@ -37,10 +38,9 @@ public class SlideTransition extends Transition
             location = source.getAbsoluteMinBound();
             location.subtractLocal(destination.getRelativeMaxBound().multLocal(1.05f));
         }
-        
 
         // Set the destination initial location.
-        Vector3f newLocation = destination.getLocalTranslation();
+        Vector3f newLocation = source.getLocalTranslation().clone();
         switch (direction)
         {
             case LEFT:
@@ -54,33 +54,46 @@ public class SlideTransition extends Transition
         }
         destination.setLocalTranslation(newLocation);
     }
-    
-    /** Creates a sliding transition in a random direction. 
-     * */
-     public SlideTransition(Panel source, Panel destination)
-     {
-         this(source,destination,Direction.values()[new Random().nextInt(4)]);
-     }
+
+    /**
+     * Creates a sliding transition in a random direction. 
+     *
+     */
+    public SlideTransition(Panel source, Panel destination)
+    {
+        this(source, destination, Direction.values()[new Random().nextInt(4)]);
+    }
 
     @Override
     public boolean isOver()
     {
-        return (direction == Direction.LEFT && destination.getLocalTranslation().x < origin.x)
-                || (direction == Direction.RIGHT && destination.getLocalTranslation().x > origin.x)
-                || (direction == Direction.DOWN && destination.getLocalTranslation().y < origin.y)
-                || (direction == Direction.UP && destination.getLocalTranslation().y > origin.y);
+        switch (direction)
+        {
+            case LEFT:
+                return destination.getLocalTranslation().x < origin.x;
+            case RIGHT:
+                return destination.getLocalTranslation().x > origin.x;
+            case DOWN:
+                return destination.getLocalTranslation().y < origin.y;
+            case UP:
+                return destination.getLocalTranslation().y > origin.y;
+            default :
+                return true;
+        }
     }
+
     @Override
     public void finish()
     {
         // On finish, replace the source on its original location.
         source.setLocalTranslation(origin);
     }
+
     @Override
     public void update(float tpf)
     {
-        Vector3f newDestinationLocation = destination.getLocalTranslation();
-        Vector3f newSourceLocation = source.getLocalTranslation();
+        Vector3f destinationLocation = destination.getLocalTranslation();
+        Vector3f sourceLocation = source.getLocalTranslation();
 
         tpf *= 5;
         switch (direction)
@@ -88,18 +101,18 @@ public class SlideTransition extends Transition
             case LEFT:
                 tpf = -tpf;
             case RIGHT:
-                newDestinationLocation.x += tpf;
-                newSourceLocation.x += tpf;
+                destinationLocation.x += tpf;
+                sourceLocation.x += tpf;
                 break;
             case DOWN:
                 tpf = -tpf;
             case UP:
-                newDestinationLocation.y += tpf;
-                newSourceLocation.y += tpf;
+                destinationLocation.y += tpf;
+                sourceLocation.y += tpf;
                 break;
         }
-
-        source.setLocalTranslation(newSourceLocation);
-        destination.setLocalTranslation(newDestinationLocation);
+        // Re-set the location to force a geometry refresh.
+        source.setLocalTranslation(sourceLocation);
+        destination.setLocalTranslation(destinationLocation);
     }
 }
