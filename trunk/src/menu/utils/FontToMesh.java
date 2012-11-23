@@ -44,7 +44,7 @@ public class FontToMesh
      * Convenience method to load a font from its name.
      *
      * @param fontName The name of the font used (E.g. "Arial").
-     * @param isExtruded If true, the mesh will be a true 3D letter, else it
+     * @param extruded If true, the mesh will be a true 3D letter, else it
      * will be flat and only contain the front of the letter.
      *
      */
@@ -57,7 +57,7 @@ public class FontToMesh
      * Creates a FontToMesh from a java font.
      *
      * @param font The java.awt font to use.
-     * @param isExtruded If true, the mesh will be a true 3D letter, else it
+     * @param extruded If true, the mesh will be a true 3D letter, else it
      * will be flat and only contain the front of the letter.
      *
      */
@@ -240,7 +240,7 @@ public class FontToMesh
     /**
      * Load font from a resource file, ie in a source package.
      */
-    private static Font loadFont(String name)
+    public static Font loadTtfFont(String name)
     {
         Font f = null;
         try

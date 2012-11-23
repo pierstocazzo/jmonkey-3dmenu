@@ -1,7 +1,6 @@
 package menu.elements;
 
 import com.jme3.app.Application;
-import com.jme3.asset.AssetManager;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -102,6 +101,7 @@ public class Panel extends MenuElement
     /**
      * Processes a mouse wheel turn.
      */
+    @Override
     public void processWheel(int step)
     {
         /* First of all, only process input if there's no transition running. */
@@ -239,7 +239,7 @@ public class Panel extends MenuElement
     @Override
     public Vector3f getLocalMinBound()
     {
-        Vector3f result = new Vector3f(0, 0, 0);
+        Vector3f result = new Vector3f(Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE);
         for (MenuElement element : menuElements)
         {
             Vector3f currentBound = element.getAbsoluteMinBound();
@@ -257,7 +257,7 @@ public class Panel extends MenuElement
     @Override
     public Vector3f getLocalMaxBound()
     {
-        Vector3f result = new Vector3f(0, 0, 0);
+        Vector3f result = new Vector3f(Float.MIN_VALUE,Float.MIN_VALUE,Float.MIN_VALUE);
         for (MenuElement element : menuElements)
         {
             Vector3f currentBound = element.getAbsoluteMaxBound();
