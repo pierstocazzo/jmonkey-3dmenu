@@ -20,6 +20,7 @@ public abstract class Transition
 
     abstract public boolean isOver();
 
+    abstract public void init();
     abstract public void finish();
 
     abstract public void update(float tpf);
