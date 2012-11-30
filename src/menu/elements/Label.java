@@ -79,7 +79,7 @@ public class Label extends MenuElement
     @Override
     protected Vector3f getLocalMaxBound()
     {
-        Vector3f result = new Vector3f(0, 0, 0);
+        Vector3f result = new Vector3f(Float.MIN_VALUE,Float.MIN_VALUE,Float.MIN_VALUE);
         for (char c : text.toCharArray())
         {
             Vector3f glyphSize = font.getGlyphSize(c);

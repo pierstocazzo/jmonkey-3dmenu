@@ -93,7 +93,7 @@ public class Panel extends MenuElement
         /* First of all, only process input if there's no transition running. */
         if (transitions.isEmpty() && clickedElement != null)
         {
-            
+
             clickedElement.processDrag(getMousePosition(clickedElement));
         }
     }
@@ -216,9 +216,9 @@ public class Panel extends MenuElement
 
             transitions.removeAll(toRemove);
         }
-        
+
         // Finally, update all elements.
-        for(MenuElement e : menuElements)
+        for (MenuElement e : menuElements)
         {
             e.update(tpf);
         }
@@ -228,8 +228,11 @@ public class Panel extends MenuElement
     {
         // First add the destination panel to the menu.
         add(transition.getDestination());
+        // Init the transistion.
+        transition.init();
         // Then add the transition itself.
         transitions.add(transition);
+
     }
 
     /**
@@ -239,7 +242,7 @@ public class Panel extends MenuElement
     @Override
     public Vector3f getLocalMinBound()
     {
-        Vector3f result = new Vector3f(Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE);
+        Vector3f result = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
         for (MenuElement element : menuElements)
         {
             Vector3f currentBound = element.getAbsoluteMinBound();
@@ -257,7 +260,7 @@ public class Panel extends MenuElement
     @Override
     public Vector3f getLocalMaxBound()
     {
-        Vector3f result = new Vector3f(Float.MIN_VALUE,Float.MIN_VALUE,Float.MIN_VALUE);
+        Vector3f result = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
         for (MenuElement element : menuElements)
         {
             Vector3f currentBound = element.getAbsoluteMaxBound();
@@ -322,27 +325,27 @@ public class Panel extends MenuElement
     private Vector3f getMousePosition(MenuElement clickedElement)
     {
         // If some component is indeed dragged, get the cursor position on the Z = 0 plane.
-            Vector2f click2d = application.getInputManager().getCursorPosition();
-            // Then make it 3D and absolute.
-            Vector3f click3d = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f);
-            // Finally, get the direction.
-            Vector3f dir = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
+        Vector2f click2d = application.getInputManager().getCursorPosition();
+        // Then make it 3D and absolute.
+        Vector3f click3d = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f);
+        // Finally, get the direction.
+        Vector3f dir = application.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
 
-            // Next, compute intersection of the ray with the element *local* Z=0 plane.
-            // To do that simply, subtract from the click3D position "enough of the
-            // direction vector" to nullify its z-component, when converted to the
-            // slider's local space.
-            clickedElement.worldToLocal(click3d, click3d);
-            clickedElement.worldToLocal(dir, dir).normalizeLocal();
+        // Next, compute intersection of the ray with the element *local* Z=0 plane.
+        // To do that simply, subtract from the click3D position "enough of the
+        // direction vector" to nullify its z-component, when converted to the
+        // slider's local space.
+        clickedElement.worldToLocal(click3d, click3d);
+        clickedElement.worldToLocal(dir, dir).normalizeLocal();
 
-            // If the direction along Z is zero, tweak it a bit.
-            if (Math.abs(dir.z) < 0.0000001f)
-            {
-                dir.z = Math.signum(dir.z) * 0.0000001f;
-            }
+        // If the direction along Z is zero, tweak it a bit.
+        if (Math.abs(dir.z) < 0.0000001f)
+        {
+            dir.z = Math.signum(dir.z) * 0.0000001f;
+        }
 
-            click3d.subtractLocal(dir.multLocal(click3d.z / dir.z));
-            return click3d;
+        click3d.subtractLocal(dir.multLocal(click3d.z / dir.z));
+        return click3d;
     }
 
     /**
@@ -431,7 +434,7 @@ public class Panel extends MenuElement
             element.findLeaves(candidates);
         }
     }
-    
+
     @Override
     public void setMaterial(Material material)
     {
@@ -451,6 +454,7 @@ public class Panel extends MenuElement
         }
 
         attachChild(menuElement);
+
         menuElements.add(menuElement);
     }
 

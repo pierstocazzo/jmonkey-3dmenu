@@ -30,4 +30,10 @@ public class DirectTransition extends Transition
     {
         // Nothing to do.
     }
+
+    @Override
+    public void init()
+    {
+         // Nothing to do.
+    }
 }
