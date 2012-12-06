@@ -7,6 +7,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
@@ -163,7 +164,7 @@ public class Main extends SimpleApplication
         
         // To add to the 3D effect, make the menu swing back and forth.
         x+=tpf;
-        mainPanel.rotate(0.001f*FastMath.sin(x), 0.0003444f*FastMath.cos(x),0);
+        mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f*FastMath.sin(x), 0.2f*FastMath.cos(x),0));
         //mainPanel.getLocalRotation().set(0.4f*FastMath.sin(x % FastMath.PI)+1, 0, 0, 1);
 
     }

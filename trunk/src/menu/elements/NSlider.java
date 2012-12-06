@@ -52,7 +52,6 @@ public class NSlider extends MenuElement
         {
             // Default value: (i+1)/n for each.
             values[i] = (i + 1f) / n;
-            System.out.println(i + ": " + values[i]);
         }
 
         for (int i = 0; i < n; i++)
