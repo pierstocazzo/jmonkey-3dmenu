@@ -1,7 +1,8 @@
 package menu.elements;
 
-
 import com.jme3.material.Material;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import menu.utils.FontToMesh;
@@ -11,18 +12,19 @@ import menu.utils.FontToMesh;
  */
 public class Label extends MenuElement
 {
+
     protected FontToMesh font;
     private String text;
     private Node stringNode;
+    protected boolean enabled = true;
 
     public Label(FontToMesh font, String text)
     {
         setName("Label");
         this.font = font;
         this.text = text;
-        refresh();
+        Label.this.refresh();
     }
-
 
     /**
      * Turns the given text into a mesh, that will be the label's physical
@@ -37,7 +39,7 @@ public class Label extends MenuElement
     @Override
     public void setMaterial(Material mat)
     {
-       this.material = mat;
+        this.material = mat;
         // Only change the string material.
         stringNode.setMaterial(mat);
     }
@@ -79,7 +81,7 @@ public class Label extends MenuElement
     @Override
     protected Vector3f getLocalMaxBound()
     {
-        Vector3f result = new Vector3f(Float.MIN_VALUE,Float.MIN_VALUE,Float.MIN_VALUE);
+        Vector3f result = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
         for (char c : text.toCharArray())
         {
             Vector3f glyphSize = font.getGlyphSize(c);
@@ -89,5 +91,28 @@ public class Label extends MenuElement
         }
 
         return result;
+    }
+
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+
+        if (enabled)
+        {
+            //setLocalScale(1f);
+            setLocalRotation(Matrix3f.IDENTITY);
+            
+        } else
+        {
+            //setLocalScale(0.3f);
+             setLocalRotation(new Quaternion().fromAngles(0f,0.45f, 0));
+        }
+        //  stringNode.setMaterial(material);
+        // setMaterial(material);
     }
 }

@@ -1,8 +1,6 @@
 package menu.elements;
 
 import com.jme3.input.controls.ActionListener;
-import com.jme3.material.Material;
-import com.jme3.material.RenderState;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
@@ -17,7 +15,6 @@ import menu.utils.FontToMesh;
 public final class Button extends menu.elements.Label
 {
     ArrayList<ActionListener> actionListeners = new ArrayList<>();
-
     public Button(FontToMesh font, String text)
     {
         super(font, text);
@@ -30,8 +27,8 @@ public final class Button extends menu.elements.Label
     @Override
     public void processClick(boolean pressedOrReleased,Vector3f cursorPosition)
     {
-        // If the button has been released
-        if (!pressedOrReleased)
+        // If the button has been released, and the button is enabled:
+        if (enabled && !pressedOrReleased)
         {
             for (ActionListener listener : actionListeners)
             {
