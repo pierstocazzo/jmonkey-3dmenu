@@ -9,9 +9,10 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import menu.elements.Button;
 import menu.elements.Carousel;
 import menu.elements.Label;
@@ -19,6 +20,7 @@ import menu.elements.NSlider;
 import menu.elements.Panel;
 import menu.transitions.DirectTransition;
 import menu.utils.FontToMesh;
+import meshes.Wedge;
 
 /**
  * test
@@ -28,10 +30,12 @@ import menu.utils.FontToMesh;
 public class Main extends SimpleApplication
 {
 
+    Geometry geo = null;
     private Panel mainPanel = new Panel();
 
     public static void main(String[] args)
     {
+        Logger.getLogger("").setLevel(Level.OFF);
         Main app = new Main();
         app.start();
     }
@@ -54,7 +58,7 @@ public class Main extends SimpleApplication
         // Attach the menu node.
         rootNode.attachChild(mainPanel);
         mainPanel.setLocalTranslation(0, 0, 0);
-       
+
 
         // Add a title label.
         Label label = new Label(FontToMesh.standardExtrudedFont, "3D Menu Demo");
@@ -73,7 +77,7 @@ public class Main extends SimpleApplication
         // Add a carousel to the right.
         Carousel<Node> carousel = new Carousel(true);
         // Add 3 boxes to the carousel.
-        for (char c: "Carousel".toCharArray())
+        for (char c : "Carousel".toCharArray())
         {
             Node node = new Node();
             Geometry geometry = new Geometry();
@@ -83,14 +87,14 @@ public class Main extends SimpleApplication
             geometry.getLocalTranslation().subtractLocal(FontToMesh.standardExtrudedFont.getGlyphSize(c).mult(0.5f));
             geometry.setMaterial(simpleLightMaterial);
             node.attachChild(geometry);
-            
+
             node.attachChild(node);
             carousel.addElements(node);
         }
         carousel.setLocalTranslation(2f, 0, 0);
         panel1.add(carousel);
-        
-        
+
+
         // Also add a button to trigger a transition.
         Button button = new Button(FontToMesh.standardFlatFont, "Button test!");
         // Move the label on the left of the menu.
@@ -138,6 +142,12 @@ public class Main extends SimpleApplication
             }
         });
 
+        /*Wedge wedge = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(0.3f, 1, 1),true);
+         geo = new Geometry("OurMesh", wedge);
+         geo.setMaterial(simpleLightMaterial);
+         geo.setLocalTranslation(0, -2, 0);
+         mainPanel.attachChild(geo);*/
+
         // Add a sun (on the right)
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
@@ -149,23 +159,23 @@ public class Main extends SimpleApplication
         al.setColor(ColorRGBA.White.mult(0.7f));
         rootNode.addLight(al);
     }
-
-
     /**
      * The menu root needs to be updated, so that moving objects can be
      * refreshed.
      */
     float x = 0f;
+
     @Override
     public void simpleUpdate(float tpf)
     {
         super.simpleUpdate(tpf);
         mainPanel.update(tpf);
-        
+
         // To add to the 3D effect, make the menu swing back and forth.
-        x+=tpf;
-        mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f*FastMath.sin(x), 0.2f*FastMath.cos(x),0));
+        x += tpf;
+        mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
         //mainPanel.getLocalRotation().set(0.4f*FastMath.sin(x % FastMath.PI)+1, 0, 0, 1);
 
+        geo.setLocalRotation(new Quaternion().fromAngles(x, 0, 0));
     }
 }
