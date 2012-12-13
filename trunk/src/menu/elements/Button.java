@@ -14,7 +14,10 @@ import menu.utils.FontToMesh;
  */
 public final class Button extends menu.elements.Label
 {
-    ArrayList<ActionListener> actionListeners = new ArrayList<>();
+    private ArrayList<ActionListener> actionListeners = new ArrayList<>();
+    private Box invisibleBox;
+    private Quad invisibleQuad;
+
     public Button(FontToMesh font, String text)
     {
         super(font, text);
@@ -25,7 +28,7 @@ public final class Button extends menu.elements.Label
      * When clicked, fire all action listeners.
      */
     @Override
-    public void processClick(boolean pressedOrReleased,Vector3f cursorPosition)
+    public void processClick(boolean pressedOrReleased, Vector3f cursorPosition)
     {
         // If the button has been released, and the button is enabled:
         if (enabled && !pressedOrReleased)
@@ -50,24 +53,40 @@ public final class Button extends menu.elements.Label
     public void refresh()
     {
         super.refresh();
-        Geometry geom;
+
+        Geometry geom = null;
         if (font.isExtruded())
         {
             // Generate an invisible box to intercept clicks.
-            Box b = new Box(getLocalMinBound(), getLocalMaxBound());
-            geom = new Geometry("Box", b);
+            if (invisibleBox == null)
+            {
+                invisibleBox = new Box(getLocalMinBound(), getLocalMaxBound());
+                geom = new Geometry("invisibleBox", invisibleBox);
+            }
+            else
+            {
+                invisibleBox.updateGeometry(getLocalMinBound(), getLocalMaxBound());
+            }
         }
         else
         {
-            // For a 2D font, only create quad.
             Vector3f maxBound = getLocalMaxBound();
-            Quad q = new Quad(maxBound.x, maxBound.y);
-            geom = new Geometry("Quad", q);
+            // For a 2D font, only create quad.
+            if (invisibleQuad == null)
+            {
+                invisibleQuad = new Quad(maxBound.x, maxBound.y);
+                geom = new Geometry("invisibleQuad", invisibleQuad);
+            }
+            else
+            {
+                invisibleQuad.updateGeometry(maxBound.x, maxBound.y);
+            }
         }
 
-        geom.setMaterial(Panel.invisibleMaterial);
-
-
-        attachChild(geom);
+        if (geom != null)
+        {
+            geom.setMaterial(Panel.invisibleMaterial);
+            attachChild(geom);
+        }
     }
 }

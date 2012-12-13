@@ -1,6 +1,8 @@
 package menu.elements;
 
 import com.jme3.material.Material;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -15,8 +17,8 @@ import java.util.ArrayList;
  */
 public abstract class MenuElement extends Node
 {
-
     protected Material material = null;
+    protected boolean enabled = true;
 
     /**
      * Processes a click.
@@ -100,5 +102,29 @@ public abstract class MenuElement extends Node
     public Material getMaterial()
     {
         return material;
+    }
+
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+
+        if (enabled)
+        {
+            //setLocalScale(1f);
+            setLocalRotation(Matrix3f.IDENTITY);
+
+        }
+        else
+        {
+            //setLocalScale(0.3f);
+            setLocalRotation(new Quaternion().fromAngles(0f, 0.45f, 0));
+        }
+        //  stringNode.setMaterial(material);
+        // setMaterial(material);
     }
 }
