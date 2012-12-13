@@ -26,7 +26,6 @@ import menu.transitions.Transition;
  * and register the inputListener, you're ready to roll. To allow a composite
  * pattern, a panel is also a menuElement. Thus, a Panel can contain other
  * panels.
- *
  */
 public class Panel extends MenuElement
 {
@@ -435,32 +434,41 @@ public class Panel extends MenuElement
         }
     }
 
-    @Override
-    public void setMaterial(Material material)
-    {
-        this.material = material;
-        for (MenuElement element : menuElements)
-        {
-            element.setMaterial(material);
-        }
-    }
-
     public void add(MenuElement menuElement)
     {
-        // If the added element has no material set, inherit that of this panel.
-        if (menuElement.material == null)
-        {
-            menuElement.setMaterial(this.material);
-        }
+        // Set this as the parent.
+        menuElement.menuParent = this;
 
         attachChild(menuElement);
-
+        
+        // If a material is set, propagate it to the child.
+        Material mat = getMenuMaterial();
+        if(mat != null)
+        {
+            menuElement.setMaterial(mat);
+        }
+        
         menuElements.add(menuElement);
     }
 
     public void remove(MenuElement menuElement)
     {
+        menuElement.menuParent = null;
         detachChild(menuElement);
         menuElements.remove(menuElement);
     }
+
+    /**
+     * On changing the menuMaterial, refresh all children.
+     */
+    @Override
+    public void setMenuMaterial(Material menuMaterial)
+    {
+        super.setMenuMaterial(menuMaterial);
+        
+        for(MenuElement child : menuElements)
+        {
+            child.setMaterial(menuMaterial);
+        }
+    }    
 }

@@ -19,7 +19,7 @@ public class Label extends MenuElement
         setName("Label");
         this.font = font;
         this.text = text;
-        Label.this.refresh();
+        refreshLabel();
     }
 
     /**
@@ -29,13 +29,12 @@ public class Label extends MenuElement
     public void setText(String text)
     {
         this.text = text;
-        refresh();
+        refreshLabel();
     }
 
     @Override
     public void setMaterial(Material mat)
     {
-        super.setMaterial(mat);
         // Only change the string material.
         stringNode.setMaterial(mat);
     }
@@ -54,11 +53,11 @@ public class Label extends MenuElement
     public void setFont(FontToMesh font)
     {
         this.font = font;
-        refresh();
+        refreshLabel();
     }
 
     /* Regenerates the mesh. */
-    protected void refresh()
+    public void refreshLabel()
     {
         // Discard the former string node.
         if (stringNode != null && hasChild(stringNode))
@@ -68,8 +67,16 @@ public class Label extends MenuElement
 
         // Generate and attach the text mesh.
         stringNode = font.getStringNode(text);
+        
+        // If there is a material set, apply it.
+        Material mat= getMenuMaterial();
+
+        if(mat != null)
+        {
+            setMaterial(mat);
+        }
+        
         attachChild(stringNode);
-        stringNode.setMaterial(material);
     }
 
     @Override

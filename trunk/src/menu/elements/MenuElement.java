@@ -17,7 +17,8 @@ import java.util.ArrayList;
  */
 public abstract class MenuElement extends Node
 {
-    protected Material material = null;
+    protected MenuElement menuParent = null;
+    protected Material menuMaterial = null;
     protected boolean enabled = true;
 
     /**
@@ -97,11 +98,29 @@ public abstract class MenuElement extends Node
     }
 
     /**
-     * @return the material
+     * @return the material affected to this menu element or its ancestor.
      */
-    public Material getMaterial()
+    public Material getMenuMaterial()
     {
-        return material;
+        if (menuMaterial != null)
+        {
+            return menuMaterial;
+        } else
+        {
+            // If the element itself has no material, return the parent, null if no parent.
+            if (parent != null)
+            {
+                return menuParent.getMenuMaterial();
+            } else
+            {
+                return null;
+            }
+        }
+    }
+    
+    public void setMenuMaterial(Material menuMaterial)
+    {
+        this.menuMaterial = menuMaterial;
     }
 
     public boolean isEnabled()

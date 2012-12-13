@@ -52,7 +52,7 @@ public class Main extends SimpleApplication
         // Also set straight ahead the panel default material - it can
         // be overriden by elements inside this panel.
         Material simpleLightMaterial = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        mainPanel.setMaterial(simpleLightMaterial);
+        mainPanel.setMenuMaterial(simpleLightMaterial);
 
         // Attach the menu node.
         rootNode.attachChild(mainPanel);
@@ -147,7 +147,11 @@ public class Main extends SimpleApplication
         ValueChooser<Integer> v = new ValueChooser<Integer>(FontToMesh.standardExtrudedFont, true, ints);
         v.setLocalTranslation(-2, 0, 0);
         panel2.add(v);
-
+         
+         ValueChooser v = new ValueChooser(FontToMesh.standardExtrudedFont, "test",false);
+        v.setLocalTranslation(-2, -4, 0);
+        panel2.add(v);
+        
         // Add a sun (on the right)
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
