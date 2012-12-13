@@ -12,11 +12,10 @@ import menu.utils.FontToMesh;
  * A Button is a clickable Label, with an invisible box to catch clicks between
  * characters.
  */
-public final class Button extends menu.elements.Label
+public class Button extends menu.elements.Label
 {
+
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
-    private Box invisibleBox;
-    private Quad invisibleQuad;
 
     public Button(FontToMesh font, String text)
     {
@@ -42,17 +41,18 @@ public final class Button extends menu.elements.Label
 
     /**
      * Adds an action listener to this button, that will be fired at each
-     * clicked.
+     * click.
      */
     public void addActionListener(ActionListener listener)
     {
         actionListeners.add(listener);
     }
 
-    @Override
+
     public void refresh()
     {
-        super.refresh();
+        refreshLabel();
+        
 
         Geometry geom = null;
         if (font.isExtruded())
@@ -67,8 +67,7 @@ public final class Button extends menu.elements.Label
             {
                 invisibleBox.updateGeometry(getLocalMinBound(), getLocalMaxBound());
             }
-        }
-        else
+        } else
         {
             Vector3f maxBound = getLocalMaxBound();
             // For a 2D font, only create quad.

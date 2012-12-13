@@ -40,7 +40,7 @@ public class NSlider extends MenuElement
         }
 
         // Set a material as used so that the panel won't override it.
-        material = materials[n][0];
+        setMaterial(materials[n][0]);
         
         this.n = n;
         // N-1 values only. If you have two boxes, you only get one value.
