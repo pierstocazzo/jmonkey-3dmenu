@@ -11,6 +11,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import menu.elements.Button;
@@ -18,9 +19,9 @@ import menu.elements.Carousel;
 import menu.elements.Label;
 import menu.elements.NSlider;
 import menu.elements.Panel;
+import menu.elements.ValueChooser;
 import menu.transitions.DirectTransition;
 import menu.utils.FontToMesh;
-import meshes.Wedge;
 
 /**
  * test
@@ -29,13 +30,11 @@ import meshes.Wedge;
  */
 public class Main extends SimpleApplication
 {
-
-    Geometry geo = null;
     private Panel mainPanel = new Panel();
 
     public static void main(String[] args)
     {
-        Logger.getLogger("").setLevel(Level.OFF);
+        Logger.getLogger("").setLevel(Level.SEVERE);
         Main app = new Main();
         app.start();
     }
@@ -126,8 +125,6 @@ public class Main extends SimpleApplication
         slideLabel.setLocalTranslation(-2, 0, 0);
         panel2.add(slideLabel);
 
-
-
         // Add a standard slider.
         final NSlider slider = new NSlider(2);
         slider.setLocalTranslation(-4, 0, 0);
@@ -142,11 +139,14 @@ public class Main extends SimpleApplication
             }
         });
 
-        /*Wedge wedge = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(0.3f, 1, 1),true);
-         geo = new Geometry("OurMesh", wedge);
-         geo.setMaterial(simpleLightMaterial);
-         geo.setLocalTranslation(0, -2, 0);
-         mainPanel.attachChild(geo);*/
+        ArrayList<Integer> ints = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+        {
+            ints.add(i);
+        }
+        ValueChooser<Integer> v = new ValueChooser<Integer>(FontToMesh.standardExtrudedFont, true, ints);
+        v.setLocalTranslation(-2, 0, 0);
+        panel2.add(v);
 
         // Add a sun (on the right)
         DirectionalLight sun = new DirectionalLight();
@@ -175,7 +175,5 @@ public class Main extends SimpleApplication
         x += tpf;
         mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
         //mainPanel.getLocalRotation().set(0.4f*FastMath.sin(x % FastMath.PI)+1, 0, 0, 1);
-
-        geo.setLocalRotation(new Quaternion().fromAngles(x, 0, 0));
     }
 }
