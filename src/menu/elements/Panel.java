@@ -347,6 +347,15 @@ public class Panel extends MenuElement
         return click3d;
     }
 
+    @Override
+    protected void refresh()
+    {
+        for (MenuElement child : menuElements)
+        {
+            child.refresh();
+        }
+    }
+
     /**
      * This global listener wraps the analog and action listeners for the scene.
      * It then redirects the events to all menu elements and their listeners.
@@ -440,15 +449,20 @@ public class Panel extends MenuElement
         menuElement.menuParent = this;
 
         attachChild(menuElement);
-        
+
         // If a material is set, propagate it to the child.
         Material mat = getMenuMaterial();
-        if(mat != null)
+        if (mat != null)
         {
             menuElement.setMaterial(mat);
         }
-        
+
         menuElements.add(menuElement);
+        // If a font is available, refresh the added element.
+        if ( menuElement.getMenuFont() != null)
+        {
+            menuElement.refresh();
+        }
     }
 
     public void remove(MenuElement menuElement)
@@ -465,10 +479,12 @@ public class Panel extends MenuElement
     public void setMenuMaterial(Material menuMaterial)
     {
         super.setMenuMaterial(menuMaterial);
-        
-        for(MenuElement child : menuElements)
+
+        for (MenuElement child : menuElements)
         {
             child.setMaterial(menuMaterial);
         }
-    }    
+
+        refresh();
+    }
 }

@@ -6,6 +6,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
+import menu.utils.Jme3DFont;
 
 /**
  * A class describing a menu element (Button, slider, etc...) All methods can -
@@ -17,6 +18,8 @@ import java.util.ArrayList;
  */
 public abstract class MenuElement extends Node
 {
+
+    protected Jme3DFont menuFont = null;
     protected MenuElement menuParent = null;
     protected Material menuMaterial = null;
     protected boolean enabled = true;
@@ -50,6 +53,8 @@ public abstract class MenuElement extends Node
     abstract protected Vector3f getLocalMinBound();
 
     abstract protected Vector3f getLocalMaxBound();
+
+    abstract protected void refresh();
 
     /**
      * Returns the elements minimum bound, as expressed in it's parent
@@ -108,7 +113,7 @@ public abstract class MenuElement extends Node
         } else
         {
             // If the element itself has no material, return the parent, null if no parent.
-            if (parent != null)
+            if (menuParent != null)
             {
                 return menuParent.getMenuMaterial();
             } else
@@ -117,12 +122,39 @@ public abstract class MenuElement extends Node
             }
         }
     }
-    
+
     public void setMenuMaterial(Material menuMaterial)
     {
         this.menuMaterial = menuMaterial;
     }
+    
+        /**
+     * @return the font affected to this menu element or its ancestor.
+     */
+    public Jme3DFont getMenuFont()
+    {
+        if (menuFont != null)
+        {
+            return menuFont;
+        } else
+        {
+            // If the element itself has no material, return the parent, null if no parent.
+            if (menuParent != null)
+            {
+                return menuParent.getMenuFont();
+            } else
+            {
+                return null;
+            }
+        }
+    }
 
+    public void setMenuFont(Jme3DFont menuFont)
+    {
+        this.menuFont = menuFont;
+    }
+    
+    
     public boolean isEnabled()
     {
         return enabled;
@@ -137,8 +169,7 @@ public abstract class MenuElement extends Node
             //setLocalScale(1f);
             setLocalRotation(Matrix3f.IDENTITY);
 
-        }
-        else
+        } else
         {
             //setLocalScale(0.3f);
             setLocalRotation(new Quaternion().fromAngles(0f, 0.45f, 0));

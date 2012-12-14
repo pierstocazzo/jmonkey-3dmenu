@@ -6,20 +6,22 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
-import menu.utils.FontToMesh;
 
 /**
  * A Button is a clickable Label, with an invisible box to catch clicks between
  * characters.
  */
-public class Button extends menu.elements.Label
+public class Button extends Label
 {
 
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
 
-    public Button(FontToMesh font, String text)
+    /**
+     * Creates a button with the specified text as a label.
+     */
+    public Button(String text)
     {
-        super(font, text);
+        super(text);
         setName("Button");
     }
 
@@ -40,52 +42,39 @@ public class Button extends menu.elements.Label
     }
 
     /**
-     * Adds an action listener to this button, that will be fired at each
-     * click.
+     * Adds an action listener to this button, that will be fired at each click.
      */
     public void addActionListener(ActionListener listener)
     {
         actionListeners.add(listener);
     }
 
-
+    @Override
     public void refresh()
     {
-        refreshLabel();
-        
+        // Delete everything, not just the label.
+        detachAllChildren();
+        // Refresh the label...
+        super.refresh();
 
+        // Then (re-)create an invisible Box or Quad to intercept clicks.
         Geometry geom = null;
-        if (font.isExtruded())
+        if (getMenuFont().isExtruded())
         {
             // Generate an invisible box to intercept clicks.
-            if (invisibleBox == null)
-            {
-                invisibleBox = new Box(getLocalMinBound(), getLocalMaxBound());
-                geom = new Geometry("invisibleBox", invisibleBox);
-            }
-            else
-            {
-                invisibleBox.updateGeometry(getLocalMinBound(), getLocalMaxBound());
-            }
+            Box invisibleBox = new Box(getLocalMinBound(), getLocalMaxBound());
+            geom = new Geometry("invisibleBox", invisibleBox);
+
         } else
         {
             Vector3f maxBound = getLocalMaxBound();
-            // For a 2D font, only create quad.
-            if (invisibleQuad == null)
-            {
-                invisibleQuad = new Quad(maxBound.x, maxBound.y);
-                geom = new Geometry("invisibleQuad", invisibleQuad);
-            }
-            else
-            {
-                invisibleQuad.updateGeometry(maxBound.x, maxBound.y);
-            }
+            // For a 2D font, only create a quad.
+            Quad invisibleQuad = new Quad(maxBound.x, maxBound.y);
+            geom = new Geometry("invisibleQuad", invisibleQuad);
+
         }
 
-        if (geom != null)
-        {
-            geom.setMaterial(Panel.invisibleMaterial);
-            attachChild(geom);
-        }
+        geom.setMaterial(Panel.invisibleMaterial);
+        attachChild(geom);
     }
 }
