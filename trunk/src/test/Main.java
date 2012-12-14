@@ -21,7 +21,7 @@ import menu.elements.NSlider;
 import menu.elements.Panel;
 import menu.elements.ValueChooser;
 import menu.transitions.DirectTransition;
-import menu.utils.FontToMesh;
+import menu.utils.Jme3DFont;
 
 /**
  * test
@@ -30,6 +30,7 @@ import menu.utils.FontToMesh;
  */
 public class Main extends SimpleApplication
 {
+
     private Panel mainPanel = new Panel();
 
     public static void main(String[] args)
@@ -53,6 +54,10 @@ public class Main extends SimpleApplication
         // be overriden by elements inside this panel.
         Material simpleLightMaterial = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mainPanel.setMenuMaterial(simpleLightMaterial);
+        // Same thing for the font.
+        mainPanel.setMenuFont(Jme3DFont.standardExtrudedFont);
+
+
 
         // Attach the menu node.
         rootNode.attachChild(mainPanel);
@@ -60,12 +65,13 @@ public class Main extends SimpleApplication
 
 
         // Add a title label.
-        Label label = new Label(FontToMesh.standardExtrudedFont, "3D Menu Demo");
+        Label label = new Label("3D Menu Demo");
+        mainPanel.add(label);
         // Scale it down a bit.
         label.scale(0.7f);
         // Center it and move it to the top of the menu.
         label.setLocalTranslation(label.getRelativeMaxBound().x * -0.5f, 2.5f, 0);
-        mainPanel.add(label);
+
 
         // Add two panels. The first will trigger a transition to the second.
         final Panel panel1 = new Panel();
@@ -81,9 +87,9 @@ public class Main extends SimpleApplication
             Node node = new Node();
             Geometry geometry = new Geometry();
             // Add a letter of the word "carousel".
-            geometry.setMesh(FontToMesh.standardExtrudedFont.getGlyphMesh(c));
+            geometry.setMesh(Jme3DFont.standardExtrudedFont.getGlyphMesh(c));
             // Center it.
-            geometry.getLocalTranslation().subtractLocal(FontToMesh.standardExtrudedFont.getGlyphSize(c).mult(0.5f));
+            geometry.getLocalTranslation().subtractLocal(Jme3DFont.standardExtrudedFont.getGlyphSize(c).mult(0.5f));
             geometry.setMaterial(simpleLightMaterial);
             node.attachChild(geometry);
 
@@ -93,9 +99,10 @@ public class Main extends SimpleApplication
         carousel.setLocalTranslation(2f, 0, 0);
         panel1.add(carousel);
 
+        panel1.setMenuFont(Jme3DFont.standardFlatFont);
 
         // Also add a button to trigger a transition.
-        Button button = new Button(FontToMesh.standardFlatFont, "Button test!");
+        Button button = new Button("Button test!");
         // Move the label on the left of the menu.
         button.setLocalTranslation(-3f, 1f, 0);
         button.scale(0.5f, 0.4f, 0.5f);
@@ -116,7 +123,7 @@ public class Main extends SimpleApplication
 
         // Create the 2nd panel.
         // Add a label.
-        final Label slideLabel = new Label(FontToMesh.standardFlatFont, "<= Move this!");
+        final Label slideLabel = new Label("<= Move this!");
         // Scale it down a bit.
         slideLabel.scale(0.5f);
 
@@ -144,14 +151,11 @@ public class Main extends SimpleApplication
         {
             ints.add(i);
         }
-        ValueChooser<Integer> v = new ValueChooser<Integer>(FontToMesh.standardExtrudedFont, true, ints);
-        v.setLocalTranslation(-2, 0, 0);
+
+        ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
+        v.setLocalTranslation(-1, -3, 0);
         panel2.add(v);
-         
-         ValueChooser v = new ValueChooser(FontToMesh.standardExtrudedFont, "test",false);
-        v.setLocalTranslation(-2, -4, 0);
-        panel2.add(v);
-        
+
         // Add a sun (on the right)
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);

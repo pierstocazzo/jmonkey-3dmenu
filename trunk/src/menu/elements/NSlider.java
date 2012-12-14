@@ -183,7 +183,8 @@ public class NSlider extends MenuElement
     /**
      * Refreshes the box positions according to the selected values.
      */
-    private void refresh()
+    @Override
+    protected void refresh()
     {
         // First Box:
         boxes[0].updateGeometry(new Vector3f(0f, 0f, 0f), new Vector3f(baseLength * getValues()[0], 0.5f, -0.5f));

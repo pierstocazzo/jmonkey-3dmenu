@@ -5,36 +5,39 @@ import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import java.util.ArrayList;
-import menu.utils.FontToMesh;
+import java.util.List;
+import menu.utils.Jme3DFont;
 import meshes.Wedge;
 
-public class ValueChooser extends Label
+/**
+ * A ValueChooser lets the user select, using arrows on either side to select
+ * values.
+ */
+public class ValueChooser<T> extends Label
 {
 
-    private Geometry wedge1 = null, wedge2 = null;
+    private int index = -1;
+    private List<T> values;
     private boolean vertical;
-    ArrayList<ActionListener> actionListeners = new ArrayList<>();
+    private ArrayList<ActionListener> actionListeners = new ArrayList<>();
 
-    public ValueChooser(FontToMesh font, String text, boolean vertical)
+    public ValueChooser(Jme3DFont font, List<T> values, boolean vertical)
     {
-        super(font, text);
-        this.vertical = vertical;
-
-        // Create the triangles.
-        if (vertical)
+        super("");
+        setName("ValueChooser");
+        if (values == null)
         {
-            Wedge w = new Wedge(Wedge.Orientation.DOWN, new Vector3f(0.3f, 1f, 0.2f), font.isExtruded());
-            wedge1 = new Geometry("wedge1", w);
-            w = new Wedge(Wedge.Orientation.UP, new Vector3f(0.3f, 1f, 0.2f), font.isExtruded());
-            wedge2 = new Geometry("wedge2", w);
-        } else
-        {
-            Wedge w = new Wedge(Wedge.Orientation.LEFT, new Vector3f(0.3f, 1f, 0.2f), font.isExtruded());
-            wedge1 = new Geometry("wedge1", w);
-            w = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(0.3f, 1f, 0.2f), font.isExtruded());
-            wedge2 = new Geometry("wedge2", w);
+            throw new NullPointerException();
         }
 
+        this.vertical = vertical;
+        this.values = values;
+
+        // If at least one value is given, set the first:
+        if (!values.isEmpty())
+        {
+            index = 0;
+        }
     }
 
     /**
@@ -45,10 +48,34 @@ public class ValueChooser extends Label
         actionListeners.add(listener);
     }
 
+    @Override
     public void refresh()
     {
-        refreshLabel();
+        this.text = values.get(index).toString();
+        super.refresh();
+
+        // Create the triangles.
+        Geometry wedge1, wedge2;
+        boolean extruded = getMenuFont().isExtruded();
+        if (vertical)
+        {
+            Wedge w = new Wedge(Wedge.Orientation.DOWN, new Vector3f(0.3f, 1f, 0.2f), extruded);
+            wedge1 = new Geometry("wedge1", w);
+            w = new Wedge(Wedge.Orientation.UP, new Vector3f(0.3f, 1f, 0.2f), extruded);
+            wedge2 = new Geometry("wedge2", w);
+        } else
+        {
+            Wedge w = new Wedge(Wedge.Orientation.LEFT, new Vector3f(0.3f, 1f, 0.2f), extruded);
+            wedge1 = new Geometry("wedge1", w);
+            w = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(0.3f, 1f, 0.2f), extruded);
+            wedge2 = new Geometry("wedge2", w);
+        }
+        Material mat = getMenuMaterial();
+        wedge1.setMaterial(mat);
+        wedge2.setMaterial(mat);
+
         attachChild(wedge1);
+        wedge1.setLocalTranslation(0, 0, 0);
     }
 
     @Override
@@ -62,6 +89,7 @@ public class ValueChooser extends Label
                 listener.onAction(name, true, queueDistance);
             }
         }
+       // index++; refresh();
     }
 
     @Override
@@ -69,7 +97,7 @@ public class ValueChooser extends Label
     {
         super.setMaterial(mat);
 
-        wedge1.setMaterial(mat);
-        wedge2.setMaterial(mat);
+        //  wedge1.setMaterial(mat);
+        // wedge2.setMaterial(mat);
     }
 }

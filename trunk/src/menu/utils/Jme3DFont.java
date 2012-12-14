@@ -23,12 +23,12 @@ import javax.media.j3d.GeometryArray;
  * This class generates and lazyloads meshes corresponding to glyphs. One
  * instance corresponds to one Font.
  */
-public class FontToMesh
+public class Jme3DFont
 {
     // Usual fonts.
 
-    public final static FontToMesh standardExtrudedFont = new FontToMesh("Arial", true);
-    public final static FontToMesh standardFlatFont = new FontToMesh("Arial", false);
+    public final static Jme3DFont standardExtrudedFont = new Jme3DFont("Arial", true);
+    public final static Jme3DFont standardFlatFont = new Jme3DFont("Arial", false);
     // The ratio used to increase distance between characters.
     public final static float spacingRatio = 1.05f;
     // The Java3D 3DFont.
@@ -48,7 +48,7 @@ public class FontToMesh
      * will be flat and only contain the front of the letter.
      *
      */
-    public FontToMesh(String fontName, boolean extruded)
+    public Jme3DFont(String fontName, boolean extruded)
     {
         this(new Font(fontName, Font.PLAIN, 2), extruded);
     }
@@ -61,7 +61,7 @@ public class FontToMesh
      * will be flat and only contain the front of the letter.
      *
      */
-    public FontToMesh(Font font, boolean extruded)
+    public Jme3DFont(Font font, boolean extruded)
     {
         font3D = new Font3D(font,
                 new FontExtrusion());
@@ -245,11 +245,11 @@ public class FontToMesh
         Font f = null;
         try
         {
-            InputStream is = FontToMesh.class.getResourceAsStream(name);
+            InputStream is = Jme3DFont.class.getResourceAsStream(name);
             f = Font.createFont(Font.TRUETYPE_FONT, is);
         } catch (FontFormatException | IOException ex)
         {
-            Logger.getLogger(FontToMesh.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Jme3DFont.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return f;

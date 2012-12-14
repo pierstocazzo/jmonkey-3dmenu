@@ -38,7 +38,8 @@ public class Carousel<T extends Node> extends MenuElement
     /**
      * Refreshes the nodes on the carousel.
      */
-    private void refresh()
+    @Override
+    protected void refresh()
     {
         detachAllChildren();
 
