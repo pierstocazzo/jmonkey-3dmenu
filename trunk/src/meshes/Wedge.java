@@ -83,10 +83,10 @@ public class Wedge extends Mesh
             vertices[0] = p0;
             vertices[1] = p1;
             vertices[2] = p2;
-            // Back triangle is easy too: retake first triangle and shift the z-coordinate. Also invert 2 vertices.
+            // Back triangle is easy too: retake first triangle and shift the z-coordinate.
             vertices[3] = new Vector3f(p0.x, p0.y, bounds.z);
-            vertices[4] = new Vector3f(p2.x, p2.y, bounds.z);
-            vertices[5] = new Vector3f(p1.x, p1.y, bounds.z);
+            vertices[4] = new Vector3f(p1.x, p1.y, bounds.z);
+            vertices[5] = new Vector3f(p2.x, p2.y, bounds.z);
 
             // Then duplicate side vertices to allow hard edges normals, resulting in 4 quads.
             vertices[6] = vertices[0];
@@ -99,10 +99,10 @@ public class Wedge extends Mesh
             vertices[12] = vertices[2];
             vertices[13] = vertices[5];
 
-            vertices[14] = vertices[1];
-            vertices[15] = vertices[4];
-            vertices[16] = vertices[2];
-            vertices[17] = vertices[5];
+            vertices[14] = vertices[2];
+            vertices[15] = vertices[5];
+            vertices[16] = vertices[0];
+            vertices[17] = vertices[3];
 
             // Normals:
             normals = new Vector3f[18];
@@ -118,9 +118,9 @@ public class Wedge extends Mesh
             normals[5] = normals[3];
 
             // Finally, sides normals are computed from the triangle sides. 
-            Vector3f normal1 = new Vector3f(p1.y - p0.y, p1.x - p0.x, 0);
-            Vector3f normal2 = new Vector3f(p2.y - p1.y, p2.x - p1.x, 0);
-            Vector3f normal3 = new Vector3f(p0.y - p2.y, p0.x - p2.x, 0);
+            Vector3f normal1 = new Vector3f(p1.y - p0.y, p0.x - p1.x, 0);
+            Vector3f normal2 = new Vector3f(p2.y - p1.y, p1.x - p2.x, 0);
+            Vector3f normal3 = new Vector3f(p0.y - p2.y, p2.x - p0.x, 0);
 
             normals[6] = normal1;
             normals[7] = normal1;
@@ -143,21 +143,21 @@ public class Wedge extends Mesh
                 // Front
                 0, 1, 2,
                 // Back
-                3, 4, 5,
+                5,4,3,
                 // Sides
-               // 6,7,8,
-                //10,11,12,
-                //14,15,16
+                6,7,8,9,8,7,
+                10,11,12,13,12,11,
+                14,15,16,17,16,15
             };
 
         }
 
         // Set the mesh data
         setBuffer(Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
-        //     setBuffer(Type.Normal, 2, BufferUtils.createFloatBuffer(normals));
+        setBuffer(Type.Normal, 3, BufferUtils.createFloatBuffer(normals));
         setBuffer(Type.Index, 3, BufferUtils.createIntBuffer(indices));
 
         updateBound();
-        setStatic();
+        //setStatic();
     }
 }
