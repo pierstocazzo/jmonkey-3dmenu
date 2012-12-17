@@ -67,7 +67,13 @@ public class Label extends MenuElement
     @Override
     protected Vector3f getLocalMinBound()
     {
-        return Vector3f.ZERO;
+        if (getMenuFont().isExtruded())
+        {
+            return new Vector3f(0,0,-0.2f);
+        } else
+        {
+            return Vector3f.ZERO;
+        }
     }
 
     @Override

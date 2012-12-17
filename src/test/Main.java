@@ -152,8 +152,12 @@ public class Main extends SimpleApplication
             ints.add(i);
         }
 
-        ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
+        ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, true);
         v.setLocalTranslation(-1, -3, 0);
+        panel2.add(v);
+        
+         v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
+        v.setLocalTranslation(2, -3, 0);
         panel2.add(v);
 
         // Add a sun (on the right)
