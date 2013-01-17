@@ -10,8 +10,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 /**
- * A N-Slider is a slider that allows to adjust N values. The sum of thos values
- * is 1. Your usual slider is a 2-Slider.
+ * A N-Slider is a slider that allows to adjust N values. 
+ * Your usual slider is a 1-Slider.
  */
 public class NSlider extends MenuElement
 {
@@ -44,17 +44,17 @@ public class NSlider extends MenuElement
         
         this.n = n;
         // N-1 values only. If you have two boxes, you only get one value.
-        values = new float[n - 1];
-        boxes = new Box[n];
+        values = new float[n];
+        boxes = new Box[n+1];
 
-
-        for (int i = 0; i < n - 1; i++)
-        {
-            // Default value: (i+1)/n for each.
-            values[i] = (i + 1f) / n;
-        }
 
         for (int i = 0; i < n; i++)
+        {
+            // Default value: (i+1)/n for each.
+            values[i] = (i + 1f) / (n+1);
+        }
+
+        for (int i = 0; i < (n+1); i++)
         {
             // Create the N boxes.
             boxes[i] = new Box(1, 1, 1);
@@ -92,7 +92,7 @@ public class NSlider extends MenuElement
 
         // Set the dragged value to the cursor current position (if possible).
         float previousValue = draggedValue == 0 ? 0f : getValues()[draggedValue - 1];
-        float nextValue = draggedValue == (n - 2) ? 1f : getValues()[draggedValue + 1];
+        float nextValue = draggedValue == (n - 1) ? 1f : getValues()[draggedValue + 1];
 
         // If the new value is "too close" to the adjacent value, snap it to the edge.
         if (newValue - previousValue > minValue)
@@ -135,7 +135,7 @@ public class NSlider extends MenuElement
 
             // Mark as "dragged" the relevant value.
             float distance = 10f;
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < n; i++)
             {
                 float currentDistance = Math.abs(getValues()[i] - value);
                 if (currentDistance < distance)
@@ -190,13 +190,13 @@ public class NSlider extends MenuElement
         boxes[0].updateGeometry(new Vector3f(0f, 0f, 0f), new Vector3f(baseLength * getValues()[0], 0.5f, -0.5f));
 
         // Middle Boxes:
-        for (int i = 0; i < n - 2; i++)
+        for (int i = 0; i < n - 1; i++)
         {
             boxes[i + 1].updateGeometry(new Vector3f(baseLength * getValues()[i], 0f, 0f), new Vector3f(baseLength * getValues()[i + 1], 0.5f, -0.5f));
         }
 
         // Last Box:
-        boxes[n - 1].updateGeometry(new Vector3f(baseLength * getValues()[n - 2], 0f, 0f), new Vector3f(baseLength, 0.5f, -0.5f));
+        boxes[n].updateGeometry(new Vector3f(baseLength * getValues()[n - 1], 0f, 0f), new Vector3f(baseLength, 0.5f, -0.5f));
 
     }
 
@@ -206,13 +206,13 @@ public class NSlider extends MenuElement
      */
     private static void initMaterials(int n)
     {
-        materials[n] = new Material[n];
+        materials[n] = new Material[n+1];
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n+1; i++)
         {
             materials[n][i] = Panel.transparentMaterial.clone();
             // Use AWT color to convert from convenient HSB to RGB.
-            Color awtColor = new Color(Color.HSBtoRGB(i * 1f / n, 0.8f, 1f));
+            Color awtColor = new Color(Color.HSBtoRGB(i * 1f / (n+1), 0.8f, 1f));
             ColorRGBA color = new ColorRGBA(awtColor.getRed() * 1f / 255, awtColor.getGreen() * 1f / 255, awtColor.getBlue() * 1f / 255, 0.7f);
             materials[n][i].setColor("Color", color);
         }
