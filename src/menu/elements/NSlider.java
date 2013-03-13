@@ -4,17 +4,19 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import java.awt.Color;
 import java.util.ArrayList;
 
 /**
- * A N-Slider is a slider that allows to adjust N values. 
- * Your usual slider is a 1-Slider.
+ * A N-Slider is a slider that allows to adjust N values. Your usual slider is a
+ * 1-Slider.
  */
 public class NSlider extends MenuElement
 {
+
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
     private float minValue = 0.05f;
     private int n = 0;
@@ -29,8 +31,6 @@ public class NSlider extends MenuElement
         null, null, null, null, null, null, null, null, null, null
     };
 
-
-
     public NSlider(int n)
     {
         // First off, if the materials are not initialized, init them.
@@ -41,20 +41,20 @@ public class NSlider extends MenuElement
 
         // Set a material as used so that the panel won't override it.
         setMaterial(materials[n][0]);
-        
+
         this.n = n;
         // N-1 values only. If you have two boxes, you only get one value.
         values = new float[n];
-        boxes = new Box[n+1];
+        boxes = new Box[n + 1];
 
 
         for (int i = 0; i < n; i++)
         {
             // Default value: (i+1)/n for each.
-            values[i] = (i + 1f) / (n+1);
+            values[i] = (i + 1f) / (n + 1);
         }
 
-        for (int i = 0; i < (n+1); i++)
+        for (int i = 0; i < (n + 1); i++)
         {
             // Create the N boxes.
             boxes[i] = new Box(1, 1, 1);
@@ -66,15 +66,18 @@ public class NSlider extends MenuElement
             // Set the relevant material
             geometry.setMaterial(materials[n][i]);
 
+            // Objects with transparency need to be in the render bucket for transparent objects:
+            geometry.setQueueBucket(Bucket.Transparent);
+
             attachChild(geometry);
         }
 
         refresh();
-        
+
         setName("Slider");
     }
 
-        public void addActionListener(ActionListener listener)
+    public void addActionListener(ActionListener listener)
     {
         actionListeners.add(listener);
     }
@@ -84,9 +87,7 @@ public class NSlider extends MenuElement
     {
         // Can't be changed for now.
     }
-        
-        
-    
+
     private void setDraggedValue(float newValue)
     {
 
@@ -100,13 +101,11 @@ public class NSlider extends MenuElement
             if (nextValue - newValue > minValue)
             {
                 values[draggedValue] = newValue;
-            }
-            else
+            } else
             {
                 values[draggedValue] = nextValue - minValue;
             }
-        }
-        else
+        } else
         {
             values[draggedValue] = previousValue + minValue;
         }
@@ -122,7 +121,7 @@ public class NSlider extends MenuElement
     }
 
     @Override
-    public void processClick(boolean pressedOrReleased,Vector3f cursorPosition)
+    public void processClick(boolean pressedOrReleased, Vector3f cursorPosition)
     {
         if (pressedOrReleased)
         {
@@ -147,8 +146,7 @@ public class NSlider extends MenuElement
 
             // Immediately set the value clicked, if possible.
             setDraggedValue(value);
-        }
-        else
+        } else
         {
             // "Release" the dragged value
             // draggedValue = -1;
@@ -170,13 +168,13 @@ public class NSlider extends MenuElement
             setDraggedValue(value);
         }
     }
-    
-     @Override
+
+    @Override
     public void processWheel(int step)
     {
         if (draggedValue != -1)
-        {       
-            setDraggedValue(values[draggedValue]  + step *0.05f);
+        {
+            setDraggedValue(values[draggedValue] + step * 0.05f);
         }
     }
 
@@ -206,13 +204,13 @@ public class NSlider extends MenuElement
      */
     private static void initMaterials(int n)
     {
-        materials[n] = new Material[n+1];
+        materials[n] = new Material[n + 1];
 
-        for (int i = 0; i < n+1; i++)
+        for (int i = 0; i < n + 1; i++)
         {
             materials[n][i] = Panel.transparentMaterial.clone();
             // Use AWT color to convert from convenient HSB to RGB.
-            Color awtColor = new Color(Color.HSBtoRGB(i * 1f / (n+1), 0.8f, 1f));
+            Color awtColor = new Color(Color.HSBtoRGB(i * 1f / (n + 1), 0.8f, 1f));
             ColorRGBA color = new ColorRGBA(awtColor.getRed() * 1f / 255, awtColor.getGreen() * 1f / 255, awtColor.getBlue() * 1f / 255, 0.7f);
             materials[n][i].setColor("Color", color);
         }
