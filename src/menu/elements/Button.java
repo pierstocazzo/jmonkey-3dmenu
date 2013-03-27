@@ -6,6 +6,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
+import menu.utils.Materials;
 
 /**
  * A Button is a clickable Label, with an invisible box to catch clicks between
@@ -13,7 +14,6 @@ import java.util.ArrayList;
  */
 public class Button extends Label
 {
-
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
 
     /**
@@ -65,7 +65,8 @@ public class Button extends Label
             Box invisibleBox = new Box(getLocalMinBound(), getLocalMaxBound());
             geom = new Geometry("invisibleBox", invisibleBox);
 
-        } else
+        }
+        else
         {
             Vector3f maxBound = getLocalMaxBound();
             // For a 2D font, only create a quad.
@@ -74,7 +75,7 @@ public class Button extends Label
 
         }
 
-        geom.setMaterial(Panel.invisibleMaterial);
+        geom.setMaterial(Materials.invisibleMaterial);
         attachChild(geom);
     }
 }

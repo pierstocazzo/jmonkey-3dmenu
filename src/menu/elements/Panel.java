@@ -11,8 +11,6 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -20,6 +18,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import menu.transitions.Transition;
+import menu.utils.Materials;
 
 /**
  * The menu panel is the root of a clickable 3D menu. Add menu elements to it,
@@ -29,10 +28,6 @@ import menu.transitions.Transition;
  */
 public class Panel extends MenuElement
 {
-    // A general-purpose invisible material.
-
-    public static Material invisibleMaterial = null;
-    public static Material transparentMaterial = null;
     // The menu prefix is appended to events strings
     public static String menuPrefix = "MGC";
     private InputListener inputListener = new InputListener();
@@ -40,6 +35,66 @@ public class Panel extends MenuElement
     private ArrayList<Transition> transitions = new ArrayList<>();
     private MenuElement clickedElement = null;
     private Application application;
+
+    /**
+     * This constructor will build a panel from a camera and a distance, so that
+     * the panel surface will match the camera's field of view, and will be
+     * located at the given distnace from the camera.
+     */
+    public Panel(Camera camera, float distance)
+    {
+        // Compute where the panel boundaries will be.
+        Vector3f lowerLeft = camera.getWorldCoordinates(Vector2f.ZERO, distance);
+        Vector3f upperRight = camera.getWorldCoordinates(new Vector2f(1,1), distance);
+        
+        
+    }
+
+    public Panel()
+    {
+    }
+
+    /**
+     * Registers the menu events (clicks, mouse moves...) in the inputListener.
+     * Hooks the menu node into the input manager. Do it once and for all.
+     */
+    public void register(Application application)
+    {
+        // (Re-)add the bindings.
+        InputManager inputManager = application.getInputManager();
+        // Mouse axes.
+        inputManager.addMapping(menuPrefix + "MouseRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping(menuPrefix + "MouseLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping(menuPrefix + "MouseUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping(menuPrefix + "MouseDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        inputManager.addMapping(menuPrefix + "MouseWheelUp", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        inputManager.addMapping(menuPrefix + "MouseWheelDown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+        // Mouse buttons.
+        inputManager.addMapping(menuPrefix + "LButton", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping(menuPrefix + "RButton", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        // Keyboard.
+        inputManager.addMapping(menuPrefix + "LCtrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
+        inputManager.addMapping(menuPrefix + "LShift", new KeyTrigger(KeyInput.KEY_LSHIFT));
+
+        // Init materials
+        Materials.initMaterials(application.getAssetManager());
+
+        // Register the listeners to this panel.
+        application.getInputManager().addListener(this.inputListener, menuPrefix + "MouseLeft", menuPrefix + "MouseRight",
+                menuPrefix + "MouseDown", menuPrefix + "MouseUp", menuPrefix + "MouseWheelUp", menuPrefix + "MouseWheelDown", menuPrefix + "LButton", menuPrefix + "RButton", menuPrefix + "LCtrl", menuPrefix + "LShift");
+
+        // Save the application to access various resources.
+        this.application = application;
+    }
+
+    /**
+     * Removes alll hooks. The menus won't work after that.
+     */
+    public void unRegister(InputManager inputManager)
+    {
+        application.getInputManager().removeListener(inputListener);
+        application = null;
+    }
 
     /**
      * Processes a click - if it's either just been pressed or just released.
@@ -71,7 +126,8 @@ public class Panel extends MenuElement
                 }
                 // Also store the node as the currently focused one.
                 clickedElement = nodeAimed;
-            } else
+            }
+            else
             {
                 // If the button has been released:
                 if (clickedElement != null)
@@ -123,58 +179,6 @@ public class Panel extends MenuElement
                 nodeAimed.processWheel(step);
             }
         }
-    }
-
-    /**
-     * Registers the menu events (clicks, mouse moves...) in the inputListener.
-     * Do it once and for all.
-     */
-    public void register(Application application)
-    {
-        // (Re-)add the bindings.
-        InputManager inputManager = application.getInputManager();
-        // Mouse axes.
-        inputManager.addMapping(menuPrefix + "MouseRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping(menuPrefix + "MouseLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping(menuPrefix + "MouseUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping(menuPrefix + "MouseDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-        inputManager.addMapping(menuPrefix + "MouseWheelUp", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
-        inputManager.addMapping(menuPrefix + "MouseWheelDown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
-        // Mouse buttons.
-        inputManager.addMapping(menuPrefix + "LButton", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping(menuPrefix + "RButton", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-        // Keyboard.
-        inputManager.addMapping(menuPrefix + "LCtrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
-        inputManager.addMapping(menuPrefix + "LShift", new KeyTrigger(KeyInput.KEY_LSHIFT));
-
-        // If the materials haven't been loaded yet, load them.
-        if (invisibleMaterial == null)
-        {
-            invisibleMaterial = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-            invisibleMaterial.getAdditionalRenderState().setFaceCullMode(RenderState.FaceCullMode.FrontAndBack);
-
-            transparentMaterial = new Material(application.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-            transparentMaterial.setColor("Color", new ColorRGBA(1, 1, 1, 0.1f));
-            transparentMaterial.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
-
-        }
-
-        // Register the listeners to this panel.
-        application.getInputManager().addListener(this.inputListener, menuPrefix + "MouseLeft", menuPrefix + "MouseRight",
-                menuPrefix + "MouseDown", menuPrefix + "MouseUp", menuPrefix + "MouseWheelUp", menuPrefix + "MouseWheelDown", menuPrefix + "LButton", menuPrefix + "RButton", menuPrefix + "LCtrl", menuPrefix + "LShift");
-
-        // Save the application to access various resources.
-        this.application = application;
-    }
-
-    /**
-     * Hooks the menu node into the input manager. Do it once to activate the
-     * menu.
-     */
-    public void unRegister(InputManager inputManager)
-    {
-        application.getInputManager().removeListener(inputListener);
-        application = null;
     }
 
     /**
@@ -315,7 +319,8 @@ public class Panel extends MenuElement
             }
 
             return null;
-        } else
+        }
+        else
         {
             return null;
         }
@@ -356,84 +361,6 @@ public class Panel extends MenuElement
         }
     }
 
-    /**
-     * This global listener wraps the analog and action listeners for the scene.
-     * It then redirects the events to all menu elements and their listeners.
-     */
-    private class InputListener implements AnalogListener, ActionListener
-    {
-
-        private boolean leftButtonDown = false;
-        private boolean ctrlDown = false;
-        private boolean shiftDown = false;
-
-        /**
-         * This listener is fired on analog events (mouse displacement,
-         * scrolling...)
-         */
-        @Override
-        public void onAnalog(String name, float value, float tpf)
-        {
-            // If the name begins with the menu prefix, strip it and continue.
-            if (name.startsWith(menuPrefix))
-            {
-                name = name.replace(menuPrefix, "");
-                int step = 1;
-                switch (name)
-                {
-                    case "MouseWheelDown":
-                        step = -step;
-                    case "MouseWheelUp":
-                        processWheel(step);
-                        break;
-                    case "MouseLeft":
-                    case "MouseRight":
-                    case "MouseDown":
-                    case "MouseUp":
-                        // If the left button is pressed, it's a drag. Process it!
-                        processDrag();
-                        break;
-                }
-            }
-        }
-
-        /**
-         * This listener is fired on non-analog events (keystrokes, clicks...)
-         */
-        @Override
-        public void onAction(String name, boolean isPressed, float tpf)
-        {
-            // If the name begins with the menu prefix, strip it and continue.
-            if (name.startsWith(menuPrefix))
-            {
-                name = name.replace(menuPrefix, "");
-                switch (name)
-                {
-                    case "LShift":
-                        shiftDown = isPressed;
-                        break;
-                    case "LCtrl":
-                        ctrlDown = isPressed;
-                        break;
-                    case "LButton":
-                        leftButtonDown = isPressed;
-                        // Process the click (on or off).
-                        processClick(isPressed);
-
-                        break;
-                    case "RButton":
-                        // On click:
-                        if (isPressed)
-                        {
-                        }
-
-
-                        break;
-                }
-            }
-        }
-    }
-
     @Override
     protected void findLeaves(ArrayList<MenuElement> candidates)
     {
@@ -454,12 +381,12 @@ public class Panel extends MenuElement
         Material mat = getMenuMaterial();
         if (mat != null)
         {
-            menuElement.setMaterial(mat);
+            menuElement.setMenuMaterial(mat);
         }
 
         menuElements.add(menuElement);
         // If a font is available, refresh the added element.
-        if ( menuElement.getMenuFont() != null)
+        if (menuElement.getMenuFont() != null)
         {
             menuElement.refresh();
         }
@@ -482,9 +409,86 @@ public class Panel extends MenuElement
 
         for (MenuElement child : menuElements)
         {
-            child.setMaterial(menuMaterial);
+            child.setMenuMaterial(menuMaterial);
         }
 
         refresh();
+    }
+
+    /**
+     * This global listener wraps the analog and action listeners for the scene.
+     * It then redirects the events to all menu elements and their listeners.
+     */
+    private class InputListener implements AnalogListener, ActionListener
+    {
+        //   private boolean leftButtonDown = false;
+        private boolean ctrlDown = false;
+        private boolean shiftDown = false;
+
+        /**
+         * This listener is fired on analog events (mouse displacement,
+         * scrolling...)
+         */
+        @Override
+        public void onAnalog(String name, float value, float tpf)
+        {
+            // If the name begins with the menu prefix, strip it and continue.
+            if (name.startsWith(menuPrefix))
+            {
+                name = name.replace(menuPrefix, "");
+                int step = 1;
+                switch (name)
+                {
+                case "MouseWheelDown":
+                    step = -step;
+                case "MouseWheelUp":
+                    processWheel(step);
+                    break;
+                case "MouseLeft":
+                case "MouseRight":
+                case "MouseDown":
+                case "MouseUp":
+                    // If the left button is pressed, it's a drag. Process it!
+                    processDrag();
+                    break;
+                }
+            }
+        }
+
+        /**
+         * This listener is fired on non-analog events (keystrokes, clicks...)
+         */
+        @Override
+        public void onAction(String name, boolean isPressed, float tpf)
+        {
+            // If the name begins with the menu prefix, strip it and continue.
+            if (name.startsWith(menuPrefix))
+            {
+                name = name.replace(menuPrefix, "");
+                switch (name)
+                {
+                case "LShift":
+                    shiftDown = isPressed;
+                    break;
+                case "LCtrl":
+                    ctrlDown = isPressed;
+                    break;
+                case "LButton":
+                    // leftButtonDown = isPressed;
+                    // Process the click (on or off).
+                    processClick(isPressed);
+
+                    break;
+                case "RButton":
+                    // On click:
+                    if (isPressed)
+                    {
+                    }
+
+
+                    break;
+                }
+            }
+        }
     }
 }

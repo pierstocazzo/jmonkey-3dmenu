@@ -9,6 +9,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import java.awt.Color;
 import java.util.ArrayList;
+import menu.utils.Materials;
 
 /**
  * A N-Slider is a slider that allows to adjust N values. Your usual slider is a
@@ -208,7 +209,7 @@ public class NSlider extends MenuElement
 
         for (int i = 0; i < n + 1; i++)
         {
-            materials[n][i] = Panel.transparentMaterial.clone();
+            materials[n][i] = Materials.transparentMaterial.clone();
             // Use AWT color to convert from convenient HSB to RGB.
             Color awtColor = new Color(Color.HSBtoRGB(i * 1f / (n + 1), 0.8f, 1f));
             ColorRGBA color = new ColorRGBA(awtColor.getRed() * 1f / 255, awtColor.getGreen() * 1f / 255, awtColor.getBlue() * 1f / 255, 0.7f);
