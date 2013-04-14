@@ -39,15 +39,29 @@ public class Panel extends MenuElement
     /**
      * This constructor will build a panel from a camera and a distance, so that
      * the panel surface will match the camera's field of view, and will be
-     * located at the given distnace from the camera.
+     * located at the given distance from the camera.
      */
-    public Panel(Camera camera, float distance)
+    public Panel(Camera camera, Node parent, float distance)
     {
+
+        // Compute the screen center position
+        Vector3f center = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2), 0);
+        Vector3f viewVector = center.subtract(camera.getLocation());
+        viewVector.multLocal(distance/viewVector.length());
+        center = camera.getLocation().add(viewVector);
+        
+        // Attach the node to the right place.
+        parent.attachChild(this);
+        setLocalTranslation(parent.worldToLocal(center, null));
+
+        // Orient the screen toward the camera
+        lookAt(camera.getLocation(), parent.worldToLocal(camera.getUp(), null));
+
+
         // Compute where the panel boundaries will be.
-        Vector3f lowerLeft = camera.getWorldCoordinates(Vector2f.ZERO, distance);
-        Vector3f upperRight = camera.getWorldCoordinates(new Vector2f(1,1), distance);
-        
-        
+        //Vector3f lowerLeft = camera.getWorldCoordinates(Vector2f.ZERO, zPos);
+        //Vector3f upperRight = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), camera.getHeight()), zPos);
+
     }
 
     public Panel()
