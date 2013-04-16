@@ -30,8 +30,7 @@ import menu.utils.Jme3DFont;
  */
 public class Main extends SimpleApplication
 {
-
-    private Panel mainPanel = new Panel();
+    private Panel mainPanel;
 
     public static void main(String[] args)
     {
@@ -47,8 +46,12 @@ public class Main extends SimpleApplication
         flyCam.setEnabled(false);
         inputManager.setCursorVisible(true);
 
+        mainPanel = new Panel(cam, rootNode, 20);
         // Init the 3D menu. This should be done for each new menu root.
         mainPanel.register(this);
+        // Attach the menu node.
+        rootNode.attachChild(mainPanel);
+        mainPanel.setLocalTranslation(0, 0, 0);
 
         // Also set straight ahead the panel default material - it can
         // be overriden by elements inside this panel.
@@ -58,24 +61,18 @@ public class Main extends SimpleApplication
         mainPanel.setMenuFont(Jme3DFont.standardExtrudedFont);
 
 
-
-        // Attach the menu node.
-        rootNode.attachChild(mainPanel);
-        mainPanel.setLocalTranslation(0, 0, 0);
-
-
         // Add a title label.
         Label label = new Label("3D Menu Demo");
         mainPanel.add(label);
         // Scale it down a bit.
         label.scale(0.7f);
         // Center it and move it to the top of the menu.
-        label.setLocalTranslation(label.getRelativeMaxBound().x * -0.5f, 2.5f, 0);
+        label.setLocalTranslation(label.getLocalWidth() * -0.5f, 2.5f, 0);
 
 
         // Add two panels. The first will trigger a transition to the second.
-        final Panel panel1 = new Panel();
-        final Panel panel2 = new Panel();
+        final Panel panel1 = new Panel(mainPanel);
+        final Panel panel2 = new Panel(mainPanel);
         mainPanel.add(panel1);
         panel1.setLocalTranslation(-2f, 0, 0);
 
@@ -147,7 +144,7 @@ public class Main extends SimpleApplication
         });
 
         ArrayList<Integer> ints = new ArrayList<>();
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 11; i++)
         {
             ints.add(i);
         }
@@ -155,8 +152,8 @@ public class Main extends SimpleApplication
         ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, true);
         v.setLocalTranslation(-1, -3, 0);
         panel2.add(v);
-        
-         v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
+
+        v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
         v.setLocalTranslation(2, -3, 0);
         panel2.add(v);
 

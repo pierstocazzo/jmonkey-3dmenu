@@ -26,11 +26,14 @@ import javax.media.j3d.GeometryArray;
 public class Jme3DFont
 {
     // Usual fonts.
-
     public final static Jme3DFont standardExtrudedFont = new Jme3DFont("Arial", true);
     public final static Jme3DFont standardFlatFont = new Jme3DFont("Arial", false);
     // The ratio used to increase distance between characters.
     public final static float spacingRatio = 1.05f;
+    // Default extrusion depth
+    public final static float extrusionDepth = 0.2f;
+    // Default extrusion depth
+    public final static int defaultHeight = 1;
     // The Java3D 3DFont.
     private Font3D font3D;
     // This map allows to lasyload meshes, holding one mesh per character.
@@ -44,21 +47,22 @@ public class Jme3DFont
      * Convenience method to load a font from its name.
      *
      * @param fontName The name of the font used (E.g. "Arial").
-     * @param extruded If true, the mesh will be a true 3D letter, else it
-     * will be flat and only contain the front of the letter.
+     * @param extruded If true, the mesh will be a true 3D letter, else it will
+     * be flat and only contain the front of the letter.
      *
      */
     public Jme3DFont(String fontName, boolean extruded)
     {
-        this(new Font(fontName, Font.PLAIN, 2), extruded);
+        // By default, the font has a size of 1 (1 world unit high.)
+        this(new Font(fontName, Font.PLAIN, defaultHeight), extruded);
     }
 
     /**
      * Creates a FontToMesh from a java font.
      *
      * @param font The java.awt font to use.
-     * @param extruded If true, the mesh will be a true 3D letter, else it
-     * will be flat and only contain the front of the letter.
+     * @param extruded If true, the mesh will be a true 3D letter, else it will
+     * be flat and only contain the front of the letter.
      *
      */
     public Jme3DFont(Font font, boolean extruded)
@@ -70,7 +74,7 @@ public class Jme3DFont
         // For the character ' ', set a null geometry...
         meshesMap.put(' ', null);
         // ... With a non-null size
-        sizeMap.put(' ', new Vector3f(0.9f, 0, 0));
+        sizeMap.put(' ', new Vector3f(defaultHeight * 0.45f, 0, 0));
     }
 
     /**
@@ -140,7 +144,8 @@ public class Jme3DFont
                 frontVertices.add(new Vector3f(coords[i + 3], coords[i + 4], coords[i + 5]));
                 frontVertices.add(new Vector3f(coords[i + 6], coords[i + 7], coords[i + 8]));
 
-            } else if (extruded)
+            }
+            else if (extruded)
             {
                 if (coords[i + 2] < 0.1f && coords[i + 5] < 0.1f && coords[i + 8] < 0.1f)
                 {
@@ -148,7 +153,8 @@ public class Jme3DFont
                     backVertices.add(new Vector3f(coords[i], coords[i + 1], coords[i + 2]));
                     backVertices.add(new Vector3f(coords[i + 3], coords[i + 4], coords[i + 5]));
                     backVertices.add(new Vector3f(coords[i + 6], coords[i + 7], coords[i + 8]));
-                } else
+                }
+                else
                 {
                     // If the Zs are not equal, put the triangle in the side category.
                     sideVertices.add(new Vector3f(coords[i], coords[i + 1], coords[i + 2]));
@@ -193,17 +199,17 @@ public class Jme3DFont
         Mesh mesh = new Mesh();
 
         // Vertices. 
-       Vector3f[] verticesArray = frontVertices.toArray(new Vector3f[0]);
+        Vector3f[] verticesArray = frontVertices.toArray(new Vector3f[0]);
 
         // If the font is extruded, push it back a little to make it
         // extruded outwards of the users view, so that all fonts are on the 
         //same plane.
         if (extruded)
         {
-           for(Vector3f v : verticesArray)
-           {
-               v.z -= 0.2f;
-           }
+            for (Vector3f v : verticesArray)
+            {
+                v.z -= 0.2f;
+            }
         }
         // Normals
         Vector3f[] normalsArray = normals.toArray(new Vector3f[0]);
@@ -247,7 +253,8 @@ public class Jme3DFont
         {
             InputStream is = Jme3DFont.class.getResourceAsStream(name);
             f = Font.createFont(Font.TRUETYPE_FONT, is);
-        } catch (FontFormatException | IOException ex)
+        }
+        catch (FontFormatException | IOException ex)
         {
             Logger.getLogger(Jme3DFont.class.getName()).log(Level.SEVERE, null, ex);
         }

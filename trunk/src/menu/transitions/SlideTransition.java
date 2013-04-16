@@ -55,7 +55,7 @@ public class SlideTransition extends Transition
     public void init()
     {
         // Put the destination on the good side of the source.
-        Vector3f location;
+       /* Vector3f location;
         if (direction == Direction.LEFT || direction == Direction.DOWN)
         {
             // The start location is the farthest bound of the source, plus the
@@ -66,7 +66,7 @@ public class SlideTransition extends Transition
         {
             location = source.getAbsoluteMinBound();
             location.subtractLocal(destination.getRelativeMaxBound().multLocal(1.05f));
-        }
+        }*/
 
         // Set the destination initial location.
         Vector3f newLocation = source.getLocalTranslation().clone();
@@ -74,11 +74,11 @@ public class SlideTransition extends Transition
         {
             case LEFT:
             case RIGHT:
-                newLocation.x = location.x;
+               // newLocation.x = location.x;
                 break;
             case UP:
             case DOWN:
-                newLocation.y = location.y;
+               // newLocation.y = location.y;
                 break;
         }
 
