@@ -35,6 +35,7 @@ public class Panel extends MenuElement
     private ArrayList<Transition> transitions = new ArrayList<>();
     private MenuElement clickedElement = null;
     private Application application;
+    Vector3f upExtent = null, rightExtent = null;
 
     /**
      * This constructor will build a panel from a camera and a distance, so that
@@ -43,15 +44,17 @@ public class Panel extends MenuElement
      */
     public Panel(Camera camera, Node parent, float distance)
     {
-
         // Compute the screen center position
+        // Find the location of the center of the screen, at near frustum.
         Vector3f center = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2), 0);
+        // Get vector from the camera to that point
         Vector3f viewVector = center.subtract(camera.getLocation());
-        viewVector.multLocal(distance/viewVector.length());
+        // Stretch it to the right length
+        viewVector.multLocal(distance / viewVector.length());
         center = camera.getLocation().add(viewVector);
-        
+        // Retrieve zPos for later.
+        float zPos = camera.getScreenCoordinates(center).z;
         // Attach the node to the right place.
-        parent.attachChild(this);
         setLocalTranslation(parent.worldToLocal(center, null));
 
         // Orient the screen toward the camera
@@ -59,12 +62,11 @@ public class Panel extends MenuElement
 
 
         // Compute where the panel boundaries will be.
-        //Vector3f lowerLeft = camera.getWorldCoordinates(Vector2f.ZERO, zPos);
-        //Vector3f upperRight = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), camera.getHeight()), zPos);
-
+        upExtent = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight() / 2), zPos);
+        rightExtent = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, 0), zPos);
     }
 
-    public Panel()
+    public Panel(Panel parent)
     {
     }
 
@@ -162,7 +164,6 @@ public class Panel extends MenuElement
         /* First of all, only process input if there's no transition running. */
         if (transitions.isEmpty() && clickedElement != null)
         {
-
             clickedElement.processDrag(getMousePosition(clickedElement));
         }
     }
@@ -201,7 +202,7 @@ public class Panel extends MenuElement
     @Override
     public void update(float tpf)
     {
-        // A lsit of transitions to remove if they are over.
+        // A list of transitions to remove if they are over.
         ArrayList<Transition> toRemove = null;
         // For each transition:
         for (Transition transition : transitions)
@@ -249,43 +250,6 @@ public class Panel extends MenuElement
         transition.init();
         // Then add the transition itself.
         transitions.add(transition);
-
-    }
-
-    /**
-     * A panel min bound is the min - on all coordinates - of all menu elements.
-     * Zero if none.
-     */
-    @Override
-    public Vector3f getLocalMinBound()
-    {
-        Vector3f result = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-        for (MenuElement element : menuElements)
-        {
-            Vector3f currentBound = element.getAbsoluteMinBound();
-            result.x = Math.min(result.x, currentBound.x);
-            result.y = Math.min(result.y, currentBound.y);
-            result.z = Math.min(result.z, currentBound.z);
-        }
-        return result;
-    }
-
-    /**
-     * A panel max bound is the max - on all coordinates - of all menu elements.
-     * Zero if none.
-     */
-    @Override
-    public Vector3f getLocalMaxBound()
-    {
-        Vector3f result = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
-        for (MenuElement element : menuElements)
-        {
-            Vector3f currentBound = element.getAbsoluteMaxBound();
-            result.x = Math.max(result.x, currentBound.x);
-            result.y = Math.max(result.y, currentBound.y);
-            result.z = Math.max(result.z, currentBound.z);
-        }
-        return result;
     }
 
     /**
@@ -375,6 +339,9 @@ public class Panel extends MenuElement
         }
     }
 
+    /**
+     * For panels - and panels only - the findLeaves iterates on every child.
+     */
     @Override
     protected void findLeaves(ArrayList<MenuElement> candidates)
     {
@@ -427,6 +394,42 @@ public class Panel extends MenuElement
         }
 
         refresh();
+    }
+
+    @Override
+    public float getLocalWidth()
+    {
+        float result = 0;
+        for (MenuElement element : menuElements)
+        {
+            //TODO
+            result = Math.max(result, element.getWidth());
+        }
+        return result;
+    }
+
+    @Override
+    public float getLocalHeight()
+    {
+                float result = 0;
+        for (MenuElement element : menuElements)
+        {
+            //TODO
+            result = Math.max(result, element.getHeight());
+        }
+        return result;
+    }
+
+    @Override
+    public float getLocalDepth()
+    {
+                     float result = 0;
+        for (MenuElement element : menuElements)
+        {
+            //TODO
+            result = Math.max(result, element.getDepth());
+        }
+        return result;
     }
 
     /**
@@ -498,7 +501,6 @@ public class Panel extends MenuElement
                     if (isPressed)
                     {
                     }
-
 
                     break;
                 }

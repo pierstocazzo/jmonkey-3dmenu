@@ -60,7 +60,7 @@ public class Carousel<T extends Node> extends MenuElement
 
 
         Matrix3f m = q.toRotationMatrix();
-        Vector3f vector = new Vector3f(0, 0, radius);
+        Vector3f vector = new Vector3f(0, 0, getRadius());
         Vector3f up = new Vector3f(0, 1, 0);
 
         for (T element : elements)
@@ -150,15 +150,38 @@ public class Carousel<T extends Node> extends MenuElement
         }
     }
 
+
     @Override
-    protected Vector3f getLocalMinBound()
-    {
-        return new Vector3f(-0.1f, -radius, -radius);
+    public float getLocalWidth()
+    {//TODO
+        return 0.1f;
     }
 
     @Override
-    protected Vector3f getLocalMaxBound()
+    public float getLocalHeight()
     {
-        return new Vector3f(0.1f, radius, radius);
+        return getRadius();
+    }
+
+    @Override
+    public float getLocalDepth()
+    {
+         return getRadius();
+    }
+
+    /**
+     * @return the radius
+     */
+    public float getRadius()
+    {
+        return radius;
+    }
+
+    /**
+     * @param radius the radius to set
+     */
+    public void setRadius(float radius)
+    {
+        this.radius = radius;
     }
 }

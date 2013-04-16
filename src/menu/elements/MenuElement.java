@@ -1,95 +1,73 @@
 package menu.elements;
 
 import com.jme3.material.Material;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Quaternion;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import menu.utils.Jme3DFont;
 
 /**
- * A class describing a menu element (Button, slider, etc...) All methods can -
+ * A class describing a menu element (Button, slider, etc...) Some methods can -
  * but not must - be overriden to provide additional behaviours when clicked,
  * dragged, etc.
- *
- * By convention, Menu Elements have their min bound at (0,0,Z).
  *
  */
 public abstract class MenuElement extends Node
 {
-
     protected Jme3DFont menuFont = null;
     protected MenuElement menuParent = null;
     protected Material menuMaterial = null;
     protected boolean enabled = true;
 
     /**
-     * Processes a click.
-     *
-     * @param pressedOrReleased If true, it's a click; else it's a button
-     * release.
+     * Refreshes this element. It sets the material again, actualises labels
+     * text, etc.
      */
-    public void processClick(boolean pressedOrReleased, Vector3f cursorPosition)
-    {
-    }
-
-    public void processKey()
-    {
-    }
-
-    public void processDrag(Vector3f cursorPosition)
-    {
-    }
-
-    public void processWheel(int step)
-    {
-    }
-
-    public void update(float tpf)
-    {
-    }
-
-    abstract protected Vector3f getLocalMinBound();
-
-    abstract protected Vector3f getLocalMaxBound();
-
     abstract protected void refresh();
 
+    abstract public float getLocalWidth();
+
+    abstract public float getLocalHeight();
+
+    abstract public float getLocalDepth();
+
+    /* abstract public void setSize();
+
+     abstract public void setWidth();*/
     /**
-     * Returns the elements minimum bound, as expressed in it's parent
-     * coordinate space.
+     * Sets the element height to the given fraction of the parent element. For
+     * example, a button can be set to occupy 10% of the parent's space.
+     *
+     * Setting the height makes the width change too.
      */
-    public Vector3f getAbsoluteMinBound()
+    /*public final void setHeight(float height)
+     {
+     scale(menuParent.getHeight()* height /getHeight());
+     }*/
+
+    /**
+     * Returns the elements width, as expressed in it's parent coordinate space.
+     */
+    public final float getWidth()
     {
-        return getLocalTransform().transformVector(getLocalMinBound(), null);
+        return getLocalTransform().transformVector(new Vector3f(getLocalWidth(), 0, 0), null).x;
     }
 
     /**
-     * Returns the elements maximum bound, as expressed in it's parent
-     * coordinate space.
+     * Returns the elements width, as expressed in it's parent coordinate space.
      */
-    public Vector3f getAbsoluteMaxBound()
+    public final float getHeight()
     {
-        return getLocalTransform().transformVector(getLocalMaxBound(), null);
+        return getLocalTransform().transformVector(new Vector3f(0, getLocalHeight(), 0), null).y;
     }
 
     /**
-     * Returns the elements minimum bound, as expressed in the element's own
-     * coordinate space.
+     * Returns the elements depth, as expressed in it's parent coordinate space.
      */
-    public Vector3f getRelativeMinBound()
+    public final float getDepth()
     {
-        return getAbsoluteMinBound().subtractLocal(getLocalTranslation());
-    }
-
-    /**
-     * Returns the elements maximum bound, as expressed in the element's own
-     * coordinate space.
-     */
-    public Vector3f getRelativeMaxBound()
-    {
-        return getAbsoluteMaxBound().subtractLocal(getLocalTranslation());
+        return getLocalTransform().transformVector(new Vector3f(0, 0, getLocalHeight()), null).z;
     }
 
     /**
@@ -103,78 +81,142 @@ public abstract class MenuElement extends Node
     }
 
     /**
-     * @return the material affected to this menu element or its ancestor.
+     * Sets a font to be used by this element - and, in the case of a panel, by
+     * each of its children. If no font is set for this element, it will request
+     * it's parent's; this allows to change the font for a whole branch.
      */
-    public Material getMenuMaterial()
+    public void setMenuFont(Jme3DFont menuFont)
+    {
+        this.menuFont = menuFont;
+    }
+
+    /**
+     * @return the material affected to this menu element or to its ancestor.
+     */
+    public final Material getMenuMaterial()
     {
         if (menuMaterial != null)
         {
             return menuMaterial;
-        } else
+        }
+        else
         {
             // If the element itself has no material, return the parent, null if no parent.
             if (menuParent != null)
             {
                 return menuParent.getMenuMaterial();
-            } else
+            }
+            else
             {
                 return null;
             }
         }
     }
 
+        /**
+     * Processes a click.
+     *
+     * @param pressedOrReleased If true, it's a click; else it's a button
+     * release.
+     */
+    public void processClick(boolean pressedOrReleased, Vector3f cursorPosition)
+    {
+    }
+
+    /**
+     * Not implemented yet.
+     */
+    public void processKey()
+    {
+    }
+
+    /**
+     * Fires when the element is dragged.
+     *
+     * @param cursorPosition The cursor position, given in the local space.
+     */
+    public void processDrag(Vector3f cursorPosition)
+    {
+    }
+
+    /**
+     * Fires when the wheel has been rolled.
+     *
+     * @param step The number (positive or negative) of steps rolled.
+     */
+    public void processWheel(int step)
+    {
+    }
+
+    /**
+     * Fires every logic update. It can be used to move things around, fire
+     * events...
+     *
+     * @param tpf The time passed since the last frame.
+     */
+    public void update(float tpf)
+    {
+    }
+
+    
+    /**
+     * Sets a material to be used by this element - and, in the case of a panel,
+     * by each of its children. If no material is set for this element, it will
+     * request it's parent's; this allows to change the material for a whole
+     * branch.
+     */
     public void setMenuMaterial(Material menuMaterial)
     {
         this.menuMaterial = menuMaterial;
     }
-    
-        /**
-     * @return the font affected to this menu element or its ancestor.
+
+    /**
+     * @return the font affected to this menu element or to its ancestor.
      */
     public Jme3DFont getMenuFont()
     {
         if (menuFont != null)
         {
             return menuFont;
-        } else
+        }
+        else
         {
             // If the element itself has no material, return the parent, null if no parent.
             if (menuParent != null)
             {
                 return menuParent.getMenuFont();
-            } else
+            }
+            else
             {
                 return null;
             }
         }
     }
 
-    public void setMenuFont(Jme3DFont menuFont)
-    {
-        this.menuFont = menuFont;
-    }
-    
-    
+    /**
+     * Returns true if the element is enabled -- e.g., clickable.
+     */
     public boolean isEnabled()
     {
         return enabled;
     }
 
+    /**
+     * Enables or disables a component. To show that it is disabled, it will rotate by 45°.
+     */
     public void setEnabled(boolean enabled)
     {
-        this.enabled = enabled;
-
-        if (enabled)
+        if (enabled && !this.enabled)
         {
-            //setLocalScale(1f);
-            setLocalRotation(Matrix3f.IDENTITY);
-
-        } else
-        {
-            //setLocalScale(0.3f);
-            setLocalRotation(new Quaternion().fromAngles(0f, 0.45f, 0));
+            // On enabling again:
+            rotate(0, -FastMath.QUARTER_PI, 0);
         }
-        //  stringNode.setMaterial(material);
-        // setMaterial(material);
+        else
+        {
+            // On disabling:
+            rotate(0, FastMath.QUARTER_PI, 0);
+        }
+
+        this.enabled = enabled;
     }
 }

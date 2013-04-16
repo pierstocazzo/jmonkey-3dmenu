@@ -58,24 +58,23 @@ public class Button extends Label
         super.refresh();
 
         // Then (re-)create an invisible Box or Quad to intercept clicks.
-        Geometry geom = null;
+        Geometry invisibleGeometry;
         if (getMenuFont().isExtruded())
         {
             // Generate an invisible box to intercept clicks.
-            Box invisibleBox = new Box(getLocalMinBound(), getLocalMaxBound());
-            geom = new Geometry("invisibleBox", invisibleBox);
-
+            Box invisibleBox = new Box(getLocalWidth(),getLocalHeight(),getLocalDepth());
+            invisibleGeometry = new Geometry("invisibleBox", invisibleBox);
         }
         else
         {
-            Vector3f maxBound = getLocalMaxBound();
+           // Vector3f maxBound = getLocalMaxBound();
             // For a 2D font, only create a quad.
-            Quad invisibleQuad = new Quad(maxBound.x, maxBound.y);
-            geom = new Geometry("invisibleQuad", invisibleQuad);
-
+            Quad invisibleQuad = new Quad(getLocalWidth(), getLocalHeight());
+            invisibleGeometry = new Geometry("invisibleQuad", invisibleQuad);
         }
 
-        geom.setMaterial(Materials.invisibleMaterial);
-        attachChild(geom);
+        // Attach the invisible geometry around the button.
+        invisibleGeometry.setMaterial(Materials.invisibleMaterial);
+        attachChild(invisibleGeometry);
     }
 }

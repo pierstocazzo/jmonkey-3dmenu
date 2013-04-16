@@ -15,11 +15,12 @@ import meshes.Wedge;
  */
 public class ValueChooser<T> extends Label
 {
-
     private int index = -1;
     private List<T> values;
     private boolean vertical;
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
+    private static final float wedgeSize = 0.45f;
+    private static final float spacing = 0.05f;
 
     public ValueChooser(Jme3DFont font, List<T> values, boolean vertical)
     {
@@ -59,42 +60,41 @@ public class ValueChooser<T> extends Label
         super.refresh();
 
         // Create the triangles.
-        Geometry wedge1, wedge2;
+        Geometry wedgeGeometry1, wedgeGeometry2;
         boolean extruded = getMenuFont().isExtruded();
 
-
-        Vector3f minBound = super.getLocalMinBound();
-        Vector3f maxBound = super.getLocalMaxBound();
-        float height = maxBound.y;
-        float width = maxBound.x;
-        float extrusion = minBound.z;
+        float height = super.getLocalHeight();
+        float width = 0.45f;
+        float extrusion = getLocalDepth();
 
         if (vertical)
         {
-            Wedge w = new Wedge(Wedge.Orientation.DOWN, new Vector3f(width / 3, width, extrusion), extruded);
-            wedge1 = new Geometry("wedge1", w);
-            w = new Wedge(Wedge.Orientation.UP, new Vector3f(width / 3, width, extrusion), extruded);
-            wedge2 = new Geometry("wedge2", w);
+            // For a vertical chooser (arrows on top and bottom) :
+            Wedge wedge = new Wedge(Wedge.Orientation.DOWN, new Vector3f(wedgeSize/3, wedgeSize, extrusion), extruded);
+            wedgeGeometry1 = new Geometry("wedge1", wedge);
+            wedge = new Wedge(Wedge.Orientation.UP, new Vector3f(wedgeSize / 3, wedgeSize, extrusion), extruded);
+            wedgeGeometry2 = new Geometry("wedge2", wedge);
 
-            wedge1.setLocalTranslation(0, 0, 0);
-            wedge2.setLocalTranslation(0, height, 0);
+            // Place the triangles and move the text node up.
+            wedgeGeometry1.setLocalTranslation(0, wedgeSize/3, 0);
+            stringNode.setLocalTranslation(0, wedgeSize/3+spacing, 0);
+            wedgeGeometry2.setLocalTranslation(0, wedgeSize/3+spacing+height+spacing, 0);
         } else
         {
             Wedge w = new Wedge(Wedge.Orientation.LEFT, new Vector3f(height / 3, height, extrusion), extruded);
-            wedge1 = new Geometry("wedge1", w);
+            wedgeGeometry1 = new Geometry("wedge1", w);
             w = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(height / 3, height, extrusion), extruded);
-            wedge2 = new Geometry("wedge2", w);
+            wedgeGeometry2 = new Geometry("wedge2", w);
 
-            wedge1.setLocalTranslation(0, 0, 0);
-            wedge2.setLocalTranslation(width, 0, 0);
+            wedgeGeometry1.setLocalTranslation(0, 0, 0);
+            wedgeGeometry2.setLocalTranslation(width, 0, 0);
         }
         Material mat = getMenuMaterial();
-        wedge1.setMaterial(mat);
-        wedge2.setMaterial(mat);
+        wedgeGeometry1.setMaterial(mat);
+        wedgeGeometry2.setMaterial(mat);
 
-        attachChild(wedge1);
-        attachChild(wedge2);
-
+        attachChild(wedgeGeometry1);
+        attachChild(wedgeGeometry2);
     }
 
     @Override
@@ -102,23 +102,21 @@ public class ValueChooser<T> extends Label
     {
         if (pressedOrReleased)
         {
-            Vector3f minBound = super.getLocalMinBound();
-            Vector3f maxBound = super.getLocalMaxBound();
             if (vertical)
             {
-                if (cursorPosition.y > maxBound.y)
+                if (cursorPosition.y > getHeight())
                 {
                     setIndex(index + 1);
-                } else if (cursorPosition.y < minBound.y)
+                } else if (cursorPosition.y < 0)
                 {
                     setIndex(index - 1);
                 }
             } else
             {
-                if (cursorPosition.x > maxBound.x)
+                if (cursorPosition.x > getWidth())
                 {
                     setIndex(index + 1);
-                } else if (cursorPosition.x < minBound.x)
+                } else if (cursorPosition.x < 0)
                 {
                     setIndex(index - 1);
                 }

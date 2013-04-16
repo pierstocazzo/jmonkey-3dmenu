@@ -10,9 +10,8 @@ import menu.utils.Jme3DFont;
  */
 public class Label extends MenuElement
 {
-
     protected String text;
-    private Node stringNode;
+    protected Node stringNode;
 
     public Label(String text)
     {
@@ -40,7 +39,6 @@ public class Label extends MenuElement
         }
     }
 
-    /* Regenerates the mesh. */
     @Override
     public void refresh()
     {
@@ -65,28 +63,42 @@ public class Label extends MenuElement
     }
 
     @Override
-    protected Vector3f getLocalMinBound()
-    {
-        if (getMenuFont().isExtruded())
-        {
-            return new Vector3f(0,0,-0.2f);
-        } else
-        {
-            return Vector3f.ZERO;
-        }
-    }
-
-    @Override
-    protected Vector3f getLocalMaxBound()
+    public float getLocalWidth()
     {
         Jme3DFont currentFont = getMenuFont();
-        Vector3f result = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+        float result = 0;
         for (char c : text.toCharArray())
         {
             Vector3f glyphSize = currentFont.getGlyphSize(c);
-            result.x += glyphSize.x * Jme3DFont.spacingRatio;
-            result.y = Math.max(result.y, glyphSize.y);
-            result.z = Math.max(result.z, glyphSize.z);
+            result += glyphSize.x * Jme3DFont.spacingRatio;
+        }
+
+        return result;
+    }
+
+    @Override
+    public float getLocalHeight()
+    {
+        Jme3DFont currentFont = getMenuFont();
+        float result = 0;
+        for (char c : text.toCharArray())
+        {
+            Vector3f glyphSize = currentFont.getGlyphSize(c);
+            result = Math.max(result,glyphSize.y);
+        }
+
+        return result;
+    }
+    
+        @Override
+    public float getLocalDepth()
+    {
+        Jme3DFont currentFont = getMenuFont();
+        float result = 0;
+        for (char c : text.toCharArray())
+        {
+            Vector3f glyphSize = currentFont.getGlyphSize(c);
+            result = Math.max(result,glyphSize.z);
         }
 
         return result;

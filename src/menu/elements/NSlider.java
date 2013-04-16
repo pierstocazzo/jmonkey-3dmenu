@@ -226,18 +226,20 @@ public class NSlider extends MenuElement
     }
 
     @Override
-    protected Vector3f getLocalMinBound()
+    public float getLocalWidth()
     {
-        Vector3f result = new Vector3f(0, 0, -0.5f);
-
-        return result;
+        return baseLength;
     }
 
     @Override
-    protected Vector3f getLocalMaxBound()
+    public float getLocalHeight()
     {
-        Vector3f result = new Vector3f(baseLength, 0.5f, 0);
+        return 0.5f;
+    }
 
-        return result;
+    @Override
+    public float getLocalDepth()
+    {
+        return 0.5f;
     }
 }
