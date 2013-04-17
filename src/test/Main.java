@@ -23,11 +23,6 @@ import menu.elements.ValueChooser;
 import menu.transitions.DirectTransition;
 import menu.utils.Jme3DFont;
 
-/**
- * test
- *
- * @author normenhansen
- */
 public class Main extends SimpleApplication
 {
     private Panel mainPanel;
@@ -77,7 +72,7 @@ public class Main extends SimpleApplication
         panel1.setLocalTranslation(-2f, 0, 0);
 
         // Add a carousel to the right.
-        Carousel<Node> carousel = new Carousel(true);
+        Carousel<Node> carousel = new Carousel<>(true);
         // Add 3 boxes to the carousel.
         for (char c : "Carousel".toCharArray())
         {
@@ -152,10 +147,11 @@ public class Main extends SimpleApplication
         ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, true);
         v.setLocalTranslation(-1, -3, 0);
         panel2.add(v);
-
+         
         v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
         v.setLocalTranslation(2, -3, 0);
         panel2.add(v);
+
 
         // Add a sun (on the right)
         DirectionalLight sun = new DirectionalLight();

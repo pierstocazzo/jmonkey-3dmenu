@@ -64,30 +64,34 @@ public class ValueChooser<T> extends Label
         boolean extruded = getMenuFont().isExtruded();
 
         float height = super.getLocalHeight();
-        float width = 0.45f;
-        float extrusion = getLocalDepth();
+        float width = super.getLocalWidth();
+        float extrusion = extruded?getLocalDepth():0;
 
         if (vertical)
         {
+            // Todo: make the wedges follow the mouse :)
             // For a vertical chooser (arrows on top and bottom) :
-            Wedge wedge = new Wedge(Wedge.Orientation.DOWN, new Vector3f(wedgeSize/3, wedgeSize, extrusion), extruded);
+            Wedge wedge = new Wedge(Wedge.Orientation.DOWN, new Vector3f(wedgeSize / 3, wedgeSize, extrusion), extruded);
             wedgeGeometry1 = new Geometry("wedge1", wedge);
             wedge = new Wedge(Wedge.Orientation.UP, new Vector3f(wedgeSize / 3, wedgeSize, extrusion), extruded);
             wedgeGeometry2 = new Geometry("wedge2", wedge);
 
             // Place the triangles and move the text node up.
-            wedgeGeometry1.setLocalTranslation(0, wedgeSize/3, 0);
-            stringNode.setLocalTranslation(0, wedgeSize/3+spacing, 0);
-            wedgeGeometry2.setLocalTranslation(0, wedgeSize/3+spacing+height+spacing, 0);
-        } else
+            wedgeGeometry1.setLocalTranslation(0, wedgeSize / 3, 0);
+            stringNode.setLocalTranslation(0, wedgeSize / 3 + spacing, 0);
+            wedgeGeometry2.setLocalTranslation(0, wedgeSize / 3 + spacing + height + spacing, 0);
+        }
+        else
         {
-            Wedge w = new Wedge(Wedge.Orientation.LEFT, new Vector3f(height / 3, height, extrusion), extruded);
+            // For a Horizontal chooser (arrows on left and right) :
+            Wedge w = new Wedge(Wedge.Orientation.LEFT, new Vector3f(wedgeSize / 3, wedgeSize, extrusion), extruded);
             wedgeGeometry1 = new Geometry("wedge1", w);
-            w = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(height / 3, height, extrusion), extruded);
+            w = new Wedge(Wedge.Orientation.RIGHT, new Vector3f(wedgeSize / 3, wedgeSize, extrusion), extruded);
             wedgeGeometry2 = new Geometry("wedge2", w);
 
             wedgeGeometry1.setLocalTranslation(0, 0, 0);
-            wedgeGeometry2.setLocalTranslation(width, 0, 0);
+            stringNode.setLocalTranslation(wedgeSize / 3 + spacing, 0, 0);
+            wedgeGeometry2.setLocalTranslation(wedgeSize / 3 + spacing + width + spacing, 0, 0);
         }
         Material mat = getMenuMaterial();
         wedgeGeometry1.setMaterial(mat);
@@ -104,19 +108,22 @@ public class ValueChooser<T> extends Label
         {
             if (vertical)
             {
-                if (cursorPosition.y > getHeight())
+                if (cursorPosition.y > getLocalHeight() / 2)
                 {
                     setIndex(index + 1);
-                } else if (cursorPosition.y < 0)
+                }
+                else
                 {
                     setIndex(index - 1);
                 }
-            } else
+            }
+            else
             {
-                if (cursorPosition.x > getWidth())
+                if (cursorPosition.x > getLocalWidth() / 2)
                 {
                     setIndex(index + 1);
-                } else if (cursorPosition.x < 0)
+                }
+                else
                 {
                     setIndex(index - 1);
                 }
@@ -131,6 +138,16 @@ public class ValueChooser<T> extends Label
                 }
             }
             // index++; refresh();
+        }
+
+        // Also fire action listeners.
+        // If the button has been released, and the button is enabled:
+        if (enabled && !pressedOrReleased)
+        {
+            for (ActionListener listener : actionListeners)
+            {
+                listener.onAction(name, true, queueDistance);
+            }
         }
     }
 

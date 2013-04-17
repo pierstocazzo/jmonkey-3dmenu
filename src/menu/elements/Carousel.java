@@ -4,14 +4,14 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * A rotating carousel to display and choose elements (nodes).
  */
-public class Carousel<T extends Node> extends MenuElement
+public class Carousel<T extends Spatial> extends MenuElement
 {
     private ArrayList<T> elements = new ArrayList<>();
     private float radius = 2f;
@@ -125,9 +125,9 @@ public class Carousel<T extends Node> extends MenuElement
     /**
      * Returns a new instance of the currently selected element.
      */
-    public T getNewInstanceOfSelection()
+    public Spatial getNewInstanceOfSelection()
     {
-        return (T) elements.get(currentIndex).clone();
+        return elements.get(currentIndex).clone();
     }
 
     /**
@@ -135,7 +135,7 @@ public class Carousel<T extends Node> extends MenuElement
      */
     public T getSelected()
     {
-        return (T) elements.get(currentIndex);
+        return elements.get(currentIndex);
     }
 
     @Override

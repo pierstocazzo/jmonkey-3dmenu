@@ -201,14 +201,13 @@ public class Jme3DFont
         // Vertices. 
         Vector3f[] verticesArray = frontVertices.toArray(new Vector3f[0]);
 
-        // If the font is extruded, push it back a little to make it
-        // extruded outwards of the users view, so that all fonts are on the 
-        //same plane.
-        if (extruded)
+        // If the font is no extruded, push it back a little to make it
+        // match the z=0 plane.
+        if (!extruded)
         {
             for (Vector3f v : verticesArray)
             {
-                v.z -= 0.2f;
+               v.z -= extrusionDepth;
             }
         }
         // Normals
