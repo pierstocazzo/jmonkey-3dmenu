@@ -9,6 +9,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import menu.utils.Materials;
 
 /**
@@ -17,31 +19,28 @@ import menu.utils.Materials;
  */
 public class NSlider extends MenuElement
 {
-
     private ArrayList<ActionListener> actionListeners = new ArrayList<>();
-    private float minValue = 0.05f;
+    private static final float minValue = 0.05f;
+    private static final float boxSize = 0.5f;
     private int n = 0;
     private int draggedValue = -1;
     private float values[];
     private Box boxes[];
     // A slider is 1.5f units long by default.
     private static final float baseLength = 1.5f;
-    // 10-slider max. TODO: turn it into a map to improve scalability
-    private static Material materials[][] =
-    {
-        null, null, null, null, null, null, null, null, null, null
-    };
+    // A (lazy loaded) map of material lists.
+    private static Map<Integer, Material[]> materials = new TreeMap<>();
 
     public NSlider(int n)
     {
-        // First off, if the materials are not initialized, init them.
-        if (materials[n] == null)
+        // First off, Check if the selected list of materials is defined.
+        if (!materials.containsKey(n))
         {
             initMaterials(n);
         }
 
         // Set a material as used so that the panel won't override it.
-        setMaterial(materials[n][0]);
+        //setMaterial(materials.get(n)[0]);
 
         this.n = n;
         // N-1 values only. If you have two boxes, you only get one value.
@@ -65,7 +64,7 @@ public class NSlider extends MenuElement
             geometry.setMesh(boxes[i]);
 
             // Set the relevant material
-            geometry.setMaterial(materials[n][i]);
+            geometry.setMaterial(materials.get(n)[i]);
 
             // Objects with transparency need to be in the render bucket for transparent objects:
             geometry.setQueueBucket(Bucket.Transparent);
@@ -86,12 +85,12 @@ public class NSlider extends MenuElement
     @Override
     public void setMaterial(Material mat)
     {
-        // Can't be changed for now.
+        // Can't be changed.
     }
 
+    /** Sets the currently dragged value to the new value. */
     private void setDraggedValue(float newValue)
     {
-
         // Set the dragged value to the cursor current position (if possible).
         float previousValue = draggedValue == 0 ? 0f : getValues()[draggedValue - 1];
         float nextValue = draggedValue == (n - 1) ? 1f : getValues()[draggedValue + 1];
@@ -102,11 +101,13 @@ public class NSlider extends MenuElement
             if (nextValue - newValue > minValue)
             {
                 values[draggedValue] = newValue;
-            } else
+            }
+            else
             {
                 values[draggedValue] = nextValue - minValue;
             }
-        } else
+        }
+        else
         {
             values[draggedValue] = previousValue + minValue;
         }
@@ -147,7 +148,8 @@ public class NSlider extends MenuElement
 
             // Immediately set the value clicked, if possible.
             setDraggedValue(value);
-        } else
+        }
+        else
         {
             // "Release" the dragged value
             // draggedValue = -1;
@@ -186,16 +188,16 @@ public class NSlider extends MenuElement
     protected void refresh()
     {
         // First Box:
-        boxes[0].updateGeometry(new Vector3f(0f, 0f, 0f), new Vector3f(baseLength * getValues()[0], 0.5f, -0.5f));
+        boxes[0].updateGeometry(new Vector3f(0f, 0f, 0f), new Vector3f(baseLength * getValues()[0], boxSize, boxSize));
 
         // Middle Boxes:
         for (int i = 0; i < n - 1; i++)
         {
-            boxes[i + 1].updateGeometry(new Vector3f(baseLength * getValues()[i], 0f, 0f), new Vector3f(baseLength * getValues()[i + 1], 0.5f, -0.5f));
+            boxes[i + 1].updateGeometry(new Vector3f(baseLength * getValues()[i], 0f, 0f), new Vector3f(baseLength * getValues()[i + 1], boxSize, boxSize));
         }
 
         // Last Box:
-        boxes[n].updateGeometry(new Vector3f(baseLength * getValues()[n - 1], 0f, 0f), new Vector3f(baseLength, 0.5f, -0.5f));
+        boxes[n].updateGeometry(new Vector3f(baseLength * getValues()[n - 1], 0f, 0f), new Vector3f(baseLength, boxSize,boxSize));
 
     }
 
@@ -205,16 +207,18 @@ public class NSlider extends MenuElement
      */
     private static void initMaterials(int n)
     {
-        materials[n] = new Material[n + 1];
+        Material newMaterials[] = new Material[n+1]; 
 
         for (int i = 0; i < n + 1; i++)
         {
-            materials[n][i] = Materials.transparentMaterial.clone();
+            newMaterials[i] = Materials.transparentMaterial.clone();
             // Use AWT color to convert from convenient HSB to RGB.
             Color awtColor = new Color(Color.HSBtoRGB(i * 1f / (n + 1), 0.8f, 1f));
             ColorRGBA color = new ColorRGBA(awtColor.getRed() * 1f / 255, awtColor.getGreen() * 1f / 255, awtColor.getBlue() * 1f / 255, 0.7f);
-            materials[n][i].setColor("Color", color);
+            newMaterials[i].setColor("Color", color);
         }
+        
+        materials.put(n, newMaterials);
     }
 
     /**
@@ -234,12 +238,12 @@ public class NSlider extends MenuElement
     @Override
     public float getLocalHeight()
     {
-        return 0.5f;
+        return boxSize;
     }
 
     @Override
     public float getLocalDepth()
     {
-        return 0.5f;
+        return boxSize;
     }
 }
