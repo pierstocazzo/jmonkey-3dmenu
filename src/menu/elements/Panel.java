@@ -35,14 +35,35 @@ public class Panel extends MenuElement
     private ArrayList<Transition> transitions = new ArrayList<>();
     private MenuElement clickedElement = null;
     private Application application;
-    Vector3f upExtent = null, rightExtent = null;
+    private Vector2f size;
+
+    public Panel(Camera camera, Node parent, float distance)
+    {
+        initView(camera, parent, distance);
+    }
 
     /**
-     * This constructor will build a panel from a camera and a distance, so that
-     * the panel surface will match the camera's field of view, and will be
-     * located at the given distance from the camera.
+     * This constructor allows to create a subpanel of a parent panel.
+     *
+     * @param parent The parent panel that will contain this one.
+     * @param position The position of the leftmost, bottom corner of the
+     * subpanel. It is expressed in the parent's referential (x [-1,1], y
+     * [-1,1]).
+     * @param size The proportion of the parent's space to occupy. (x [-1,1], y
+     * [-1,1]).
      */
-    public Panel(Camera camera, Node parent, float distance)
+    public Panel(Panel parent, Vector2f position, Vector2f size)
+    {
+        setLocalTranslation(position.x,position.y,0);
+        this.size = new Vector2f(size.x * parent.size.x,size.y * parent.size.y);
+    }
+
+    /**
+     * This method will set a panel from a camera and a distance, so that the
+     * panel surface will match the camera's field of view, and will be located
+     * at the given distance from the camera.
+     */
+    public final void initView(Camera camera, Node parent, float distance)
     {
         // Compute the screen center position
         // Find the location of the center of the screen, at near frustum.
@@ -60,14 +81,15 @@ public class Panel extends MenuElement
         // Orient the screen toward the camera
         lookAt(camera.getLocation(), parent.worldToLocal(camera.getUp(), null));
 
-
-        // Compute where the panel boundaries will be.
-        upExtent = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight() / 2), zPos);
-        rightExtent = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, 0), zPos);
-    }
-
-    public Panel(Panel parent)
-    {
+        // Compute the "up" and "right" extents (x and y in local space) that
+        // will define the panel's size to match the screen.
+        // Eventhough the panel isn't attached yet, we already have the
+        // direction (x and y in the panel's local space) and the length is the
+        // same as expressed in the root node, as long as there is no scale 
+        // applied to the panel.
+        size = new Vector2f();
+        size.x = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight() / 2), zPos).length();
+        size.y = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, 0), zPos).length();
     }
 
     /**
@@ -411,7 +433,7 @@ public class Panel extends MenuElement
     @Override
     public float getLocalHeight()
     {
-                float result = 0;
+        float result = 0;
         for (MenuElement element : menuElements)
         {
             //TODO
@@ -423,7 +445,7 @@ public class Panel extends MenuElement
     @Override
     public float getLocalDepth()
     {
-                     float result = 0;
+        float result = 0;
         for (MenuElement element : menuElements)
         {
             //TODO
@@ -506,5 +528,10 @@ public class Panel extends MenuElement
                 }
             }
         }
+    }
+
+    public int attachChild(MenuElement child)
+    {
+        return super.attachChild(child);
     }
 }
