@@ -8,6 +8,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -66,10 +67,10 @@ public class Main extends SimpleApplication
 
 
         // Add two panels. The first will trigger a transition to the second.
-        final Panel panel1 = new Panel(mainPanel);
-        final Panel panel2 = new Panel(mainPanel);
+        final Panel panel1 = new Panel(mainPanel,new Vector2f(-1, -1),new Vector2f(0.5f, 0.5f));
+        final Panel panel2 = new Panel(mainPanel,new Vector2f(-1, -1),new Vector2f(0.5f, 0.5f));
         mainPanel.add(panel1);
-        panel1.setLocalTranslation(-2f, 0, 0);
+       // panel1.setLocalTranslation(-2f, 0, 0);
 
         // Add a carousel to the right.
         Carousel<Node> carousel = new Carousel<>(true);
