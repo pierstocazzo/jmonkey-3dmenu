@@ -54,8 +54,8 @@ public class Panel extends MenuElement
      */
     public Panel(Panel parent, Vector2f position, Vector2f size)
     {
-        setLocalTranslation(position.x,position.y,0);
-        this.size = new Vector2f(size.x * parent.size.x,size.y * parent.size.y);
+        setLocalTranslation(position.x * parent.size.x, position.y * parent.size.y, 0);
+        this.size = new Vector2f(size.x * parent.size.x, size.y * parent.size.y);
     }
 
     /**
@@ -65,18 +65,18 @@ public class Panel extends MenuElement
      */
     public final void initView(Camera camera, Node parent, float distance)
     {
-        // Compute the screen center position
-        // Find the location of the center of the screen, at near frustum.
-        Vector3f center = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2), 0);
+        // Compute the screen lower left position
+        // Find the location of the corner of the screen, at near frustum.
+        Vector3f lowerLeft = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2), 0);
         // Get vector from the camera to that point
-        Vector3f viewVector = center.subtract(camera.getLocation());
+        Vector3f viewVector = lowerLeft.subtract(camera.getLocation());
         // Stretch it to the right length
         viewVector.multLocal(distance / viewVector.length());
-        center = camera.getLocation().add(viewVector);
+        lowerLeft = camera.getLocation().add(viewVector);
         // Retrieve zPos for later.
-        float zPos = camera.getScreenCoordinates(center).z;
+        float zPos = camera.getScreenCoordinates(lowerLeft).z;
         // Attach the node to the right place.
-        setLocalTranslation(parent.worldToLocal(center, null));
+        setLocalTranslation(parent.worldToLocal(lowerLeft, null));
 
         // Orient the screen toward the camera
         lookAt(camera.getLocation(), parent.worldToLocal(camera.getUp(), null));
@@ -88,8 +88,8 @@ public class Panel extends MenuElement
         // same as expressed in the root node, as long as there is no scale 
         // applied to the panel.
         size = new Vector2f();
-        size.x = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight() / 2), zPos).length();
-        size.y = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, 0), zPos).length();
+        size.x = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight()), zPos).length();
+        size.y = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), 0), zPos).length();
     }
 
     /**
