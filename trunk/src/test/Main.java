@@ -6,8 +6,6 @@ import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -32,6 +30,7 @@ public class Main extends SimpleApplication
     {
         Logger.getLogger("").setLevel(Level.SEVERE);
         Main app = new Main();
+
         app.start();
     }
 
@@ -47,7 +46,7 @@ public class Main extends SimpleApplication
         mainPanel.register(this);
         // Attach the menu node.
         rootNode.attachChild(mainPanel);
-        mainPanel.setLocalTranslation(0, 0, 0);
+        mainPanel.debug(this);
 
         // Also set straight ahead the panel default material - it can
         // be overriden by elements inside this panel.
@@ -67,10 +66,10 @@ public class Main extends SimpleApplication
 
 
         // Add two panels. The first will trigger a transition to the second.
-        final Panel panel1 = new Panel(mainPanel,new Vector2f(-1, -1),new Vector2f(0.5f, 0.5f));
-        final Panel panel2 = new Panel(mainPanel,new Vector2f(-1, -1),new Vector2f(0.5f, 0.5f));
+        final Panel panel1 = new Panel(mainPanel, new Vector2f(-1, -1), new Vector2f(0.5f, 0.5f));
+        final Panel panel2 = new Panel(mainPanel, new Vector2f(-1, -1), new Vector2f(0.5f, 0.5f));
         mainPanel.add(panel1);
-       // panel1.setLocalTranslation(-2f, 0, 0);
+        // panel1.setLocalTranslation(-2f, 0, 0);
 
         // Add a carousel to the right.
         Carousel<Node> carousel = new Carousel<>(true);
@@ -148,7 +147,7 @@ public class Main extends SimpleApplication
         ValueChooser v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, true);
         v.setLocalTranslation(-1, -3, 0);
         panel2.add(v);
-         
+
         v = new ValueChooser(Jme3DFont.standardExtrudedFont, ints, false);
         v.setLocalTranslation(2, -3, 0);
         panel2.add(v);
@@ -178,8 +177,8 @@ public class Main extends SimpleApplication
         mainPanel.update(tpf);
 
         // To add to the 3D effect, make the menu swing back and forth.
-        x += tpf;
-        mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
+        x += tpf / 100;
+       // mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
         //mainPanel.getLocalRotation().set(0.4f*FastMath.sin(x % FastMath.PI)+1, 0, 0, 1);
     }
 }
