@@ -1,6 +1,7 @@
 package menu.elements;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
@@ -11,11 +12,14 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import menu.transitions.Transition;
 import menu.utils.Materials;
@@ -40,6 +44,20 @@ public class Panel extends MenuElement
     public Panel(Camera camera, Node parent, float distance)
     {
         initView(camera, parent, distance);
+    }
+
+    public void debug(SimpleApplication app)
+    {
+        Quad quad = new Quad(getLocalWidth(), getLocalHeight());
+        Geometry geo = new Geometry("Box", quad);
+
+        geo.setMaterial(Materials.transparentMaterial);
+
+        this.attachChild(geo);
+       geo.setLocalTranslation(0, 0, 0);
+
+        app.getFlyByCamera().setEnabled(true);
+        app.getInputManager().setCursorVisible(false);
     }
 
     /**
@@ -67,20 +85,20 @@ public class Panel extends MenuElement
     {
         // Compute the screen lower left position
         // Find the location of the corner of the screen, at near frustum.
-        Vector3f lowerLeft = camera.getWorldCoordinates(new Vector2f(camera.getWidth() / 2, camera.getHeight() / 2), 0);
+        Vector3f lowerLeft = camera.getWorldCoordinates(new Vector2f(0, 0), 0);
         // Get vector from the camera to that point
         Vector3f viewVector = lowerLeft.subtract(camera.getLocation());
         // Stretch it to the right length
         viewVector.multLocal(distance / viewVector.length());
         lowerLeft = camera.getLocation().add(viewVector);
+        
         // Retrieve zPos for later.
         float zPos = camera.getScreenCoordinates(lowerLeft).z;
         // Attach the node to the right place.
         setLocalTranslation(parent.worldToLocal(lowerLeft, null));
-
-        // Orient the screen toward the camera
-        lookAt(camera.getLocation(), parent.worldToLocal(camera.getUp(), null));
-
+     
+        Vector3f xAxis =camera.getWorldCoordinates(new Vector2f(camera.getWidth(), 0), zPos).subtractLocal(lowerLeft);
+        Vector3f yAxis = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight()), zPos).subtractLocal(lowerLeft);
         // Compute the "up" and "right" extents (x and y in local space) that
         // will define the panel's size to match the screen.
         // Eventhough the panel isn't attached yet, we already have the
@@ -88,8 +106,11 @@ public class Panel extends MenuElement
         // same as expressed in the root node, as long as there is no scale 
         // applied to the panel.
         size = new Vector2f();
-        size.x = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight()), zPos).length();
-        size.y = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), 0), zPos).length();
+        size.x = xAxis.length();
+        size.y = yAxis.length();
+        
+        // Finally, orient the screen toward the camera
+        lookAt(xAxis.cross(yAxis), yAxis);
     }
 
     /**
@@ -421,25 +442,13 @@ public class Panel extends MenuElement
     @Override
     public float getLocalWidth()
     {
-        float result = 0;
-        for (MenuElement element : menuElements)
-        {
-            //TODO
-            result = Math.max(result, element.getWidth());
-        }
-        return result;
+        return size.x;
     }
 
     @Override
     public float getLocalHeight()
     {
-        float result = 0;
-        for (MenuElement element : menuElements)
-        {
-            //TODO
-            result = Math.max(result, element.getHeight());
-        }
-        return result;
+        return size.y;
     }
 
     @Override
