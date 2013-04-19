@@ -2,6 +2,7 @@ package menu.elements;
 
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
@@ -26,10 +27,22 @@ public abstract class MenuElement extends Node
      */
     abstract protected void refresh();
 
+    /**
+     * The local (i.e, expressed in it's own model space) width of the
+     * component.
+     */
     abstract public float getLocalWidth();
 
+    /**
+     * The local (i.e, expressed in it's own model space) height of the
+     * component.
+     */
     abstract public float getLocalHeight();
 
+    /**
+     * The local (i.e, expressed in it's own model space) depth of the
+     * component.
+     */
     abstract public float getLocalDepth();
 
     /* abstract public void setSize();
@@ -41,10 +54,17 @@ public abstract class MenuElement extends Node
      *
      * Setting the height makes the width change too.
      */
-    /*public final void setHeight(float height)
-     {
-     scale(menuParent.getHeight()* height /getHeight());
-     }*/
+    public final void setHeight(float height)
+    {
+        float amount = menuParent.getHeight() * height / getHeight();
+        scale(amount);
+        setLocalTranslation(getLocalTranslation().mult(amount));
+    }
+
+    public void setPosition(Vector2f v)
+    {
+        setLocalTranslation(v.x, v.y, 0);
+    }
 
     /**
      * Returns the elements width, as expressed in it's parent coordinate space.
@@ -113,7 +133,7 @@ public abstract class MenuElement extends Node
         }
     }
 
-        /**
+    /**
      * Processes a click.
      *
      * @param pressedOrReleased If true, it's a click; else it's a button
@@ -158,7 +178,6 @@ public abstract class MenuElement extends Node
     {
     }
 
-    
     /**
      * Sets a material to be used by this element - and, in the case of a panel,
      * by each of its children. If no material is set for this element, it will
@@ -202,7 +221,8 @@ public abstract class MenuElement extends Node
     }
 
     /**
-     * Enables or disables a component. To show that it is disabled, it will rotate by 45°.
+     * Enables or disables a component. To show that it is disabled, it will
+     * rotate by 45°.
      */
     public void setEnabled(boolean enabled)
     {

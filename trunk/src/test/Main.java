@@ -41,12 +41,12 @@ public class Main extends SimpleApplication
         flyCam.setEnabled(false);
         inputManager.setCursorVisible(true);
 
-        mainPanel = new Panel(cam, rootNode, 20);
+        mainPanel = new Panel(cam, rootNode, 5);
         // Init the 3D menu. This should be done for each new menu root.
         mainPanel.register(this);
         // Attach the menu node.
         rootNode.attachChild(mainPanel);
-        mainPanel.debug(this);
+        // mainPanel.debug(this);
 
         // Also set straight ahead the panel default material - it can
         // be overriden by elements inside this panel.
@@ -59,15 +59,13 @@ public class Main extends SimpleApplication
         // Add a title label.
         Label label = new Label("3D Menu Demo");
         mainPanel.add(label);
-        // Scale it down a bit.
-        label.scale(0.7f);
-        // Center it and move it to the top of the menu.
-        label.setLocalTranslation(label.getLocalWidth() * -0.5f, 2.5f, 0);
+        label.setHeight(0.1f);
+        label.setPosition(new Vector2f(0.2f, 0.9f));
 
 
         // Add two panels. The first will trigger a transition to the second.
-        final Panel panel1 = new Panel(mainPanel, new Vector2f(-1, -1), new Vector2f(0.5f, 0.5f));
-        final Panel panel2 = new Panel(mainPanel, new Vector2f(-1, -1), new Vector2f(0.5f, 0.5f));
+        final Panel panel1 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(0.5f, 0.5f));
+        final Panel panel2 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(0.5f, 0.5f));
         mainPanel.add(panel1);
         // panel1.setLocalTranslation(-2f, 0, 0);
 
@@ -178,7 +176,7 @@ public class Main extends SimpleApplication
 
         // To add to the 3D effect, make the menu swing back and forth.
         x += tpf / 100;
-       // mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
+        // mainPanel.setLocalRotation(new Quaternion().fromAngles(0.2f * FastMath.sin(x), 0.2f * FastMath.cos(x), 0));
         //mainPanel.getLocalRotation().set(0.4f*FastMath.sin(x % FastMath.PI)+1, 0, 0, 1);
     }
 }
