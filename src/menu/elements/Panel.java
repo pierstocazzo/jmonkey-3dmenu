@@ -12,7 +12,6 @@ import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -34,12 +33,18 @@ public class Panel extends MenuElement
 {
     // The menu prefix is appended to events strings
     public static String menuPrefix = "MGC";
-    private InputListener inputListener = new InputListener();
+      private Vector2f size = new Vector2f();
+    
+    private InputListener inputListener = null;
     private ArrayList<MenuElement> menuElements = new ArrayList<>();
     private ArrayList<Transition> transitions = new ArrayList<>();
     private MenuElement clickedElement = null;
-    private Application application;
-    private Vector2f size;
+    private Application application = null;
+  
+
+    protected Panel()
+    {
+    }
 
     public Panel(Camera camera, Node parent, float distance)
     {
@@ -54,26 +59,30 @@ public class Panel extends MenuElement
         geo.setMaterial(Materials.transparentMaterial);
 
         this.attachChild(geo);
-       geo.setLocalTranslation(0, 0, 0);
+        geo.setLocalTranslation(0, 0, 0);
 
         app.getFlyByCamera().setEnabled(true);
         app.getInputManager().setCursorVisible(false);
     }
 
     /**
-     * This constructor allows to create a subpanel of a parent panel.
+     * This method creates a subpanel of a parent panel.
      *
      * @param parent The parent panel that will contain this one.
      * @param position The position of the leftmost, bottom corner of the
-     * subpanel. It is expressed in the parent's referential (x [-1,1], y
-     * [-1,1]).
-     * @param size The proportion of the parent's space to occupy. (x [-1,1], y
-     * [-1,1]).
+     * subpanel. It is expressed in the parent's referential (x [0,1], y
+     * [0,1]).
+     * @param size The proportion of the parent's space to occupy. (x [0,1], y
+     * [0,1]).
      */
-    public Panel(Panel parent, Vector2f position, Vector2f size)
+    public Panel createSubPanel(Vector2f position, Vector2f size)
     {
-        setLocalTranslation(position.x * parent.size.x, position.y * parent.size.y, 0);
-        this.size = new Vector2f(size.x * parent.size.x, size.y * parent.size.y);
+        Panel result = new Panel();
+        
+        result.setLocalTranslation(position.x * this.size.x, position.y * this.size.y, 0);
+        result.size.set(size.x * this.size.x, size.y * this.size.y);
+        
+        return result;
     }
 
     /**
@@ -91,13 +100,13 @@ public class Panel extends MenuElement
         // Stretch it to the right length
         viewVector.multLocal(distance / viewVector.length());
         lowerLeft = camera.getLocation().add(viewVector);
-        
+
         // Retrieve zPos for later.
         float zPos = camera.getScreenCoordinates(lowerLeft).z;
         // Attach the node to the right place.
         setLocalTranslation(parent.worldToLocal(lowerLeft, null));
-     
-        Vector3f xAxis =camera.getWorldCoordinates(new Vector2f(camera.getWidth(), 0), zPos).subtractLocal(lowerLeft);
+
+        Vector3f xAxis = camera.getWorldCoordinates(new Vector2f(camera.getWidth(), 0), zPos).subtractLocal(lowerLeft);
         Vector3f yAxis = camera.getWorldCoordinates(new Vector2f(0, camera.getHeight()), zPos).subtractLocal(lowerLeft);
         // Compute the "up" and "right" extents (x and y in local space) that
         // will define the panel's size to match the screen.
@@ -105,10 +114,9 @@ public class Panel extends MenuElement
         // direction (x and y in the panel's local space) and the length is the
         // same as expressed in the root node, as long as there is no scale 
         // applied to the panel.
-        size = new Vector2f();
         size.x = xAxis.length();
         size.y = yAxis.length();
-        
+
         // Finally, orient the screen toward the camera
         lookAt(lowerLeft.add(xAxis.cross(yAxis)), yAxis);
     }
