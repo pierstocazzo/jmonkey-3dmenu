@@ -110,7 +110,7 @@ public class Panel extends MenuElement
         size.y = yAxis.length();
         
         // Finally, orient the screen toward the camera
-        lookAt(xAxis.cross(yAxis), yAxis);
+        lookAt(lowerLeft.add(xAxis.cross(yAxis)), yAxis);
     }
 
     /**
