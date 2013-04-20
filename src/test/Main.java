@@ -53,14 +53,14 @@ public class Main extends SimpleApplication
         Material simpleLightMaterial = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mainPanel.setMenuMaterial(simpleLightMaterial);
         // Same thing for the font.
-        mainPanel.setMenuFont(Jme3DFont.standardFlatFont);
+        mainPanel.setMenuFont(Jme3DFont.standardExtrudedFont);
 
 
         // Add a title label.
         Label label = new Label("3D Menu Demo");
         mainPanel.add(label);
-        label.setHeight(0.1f);
-        label.setPosition(new Vector2f(0.5f, 0.9f));
+        label.setSize(1, 1);
+        label.setPosition(new Vector2f(0f, 0f));
 
 
         // Add two panels. The first will trigger a transition to the second.

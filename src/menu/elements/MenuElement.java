@@ -46,10 +46,21 @@ public abstract class MenuElement extends Node
      */
     abstract public float getLocalDepth();
 
-    /* abstract public void setSize();/*
+    /**
+     * Sets the element size to the given x or y (fraction of the parent
+     * element). For example, a button can be set to occupy 10% of the parent's
+     * space.
+     *
+     * This changes the scale proportions.
+     */
+    public final void setSize(float width, float height)
+    {
+        float xAmount = menuParent.getLocalWidth() * width / getWidth();
+        float yAmount = menuParent.getLocalHeight() * height / getHeight();
+        scale(xAmount,yAmount,1);
+    }
 
-
-*     /**
+    /**
      * Sets the element width to the given fraction of the parent element. For
      * example, a button can be set to occupy 10% of the parent's space.
      *
@@ -59,9 +70,8 @@ public abstract class MenuElement extends Node
     {
         float amount = menuParent.getLocalWidth() * width / getWidth();
         scale(amount);
-        //setLocalTranslation(getLocalTranslation().mult(amount));
     }
-    
+
     /**
      * Sets the element height to the given fraction of the parent element. For
      * example, a button can be set to occupy 10% of the parent's space.
@@ -72,7 +82,6 @@ public abstract class MenuElement extends Node
     {
         float amount = menuParent.getLocalHeight() * height / getHeight();
         scale(amount);
-        //setLocalTranslation(getLocalTranslation().mult(amount));
     }
 
     public void setPosition(Vector2f v)
