@@ -16,6 +16,7 @@ import menu.utils.Jme3DFont;
  */
 public abstract class MenuElement extends Node
 {
+
     protected Jme3DFont menuFont = null;
     protected MenuElement menuParent = null;
     protected Material menuMaterial = null;
@@ -45,25 +46,38 @@ public abstract class MenuElement extends Node
      */
     abstract public float getLocalDepth();
 
-    /* abstract public void setSize();
+    /* abstract public void setSize();/*
 
-     abstract public void setWidth();*/
+
+*     /**
+     * Sets the element width to the given fraction of the parent element. For
+     * example, a button can be set to occupy 10% of the parent's space.
+     *
+     * Setting the width makes the height change accordingly.
+     */
+    public final void setWidth(float width)
+    {
+        float amount = menuParent.getLocalWidth() * width / getWidth();
+        scale(amount);
+        //setLocalTranslation(getLocalTranslation().mult(amount));
+    }
+    
     /**
      * Sets the element height to the given fraction of the parent element. For
      * example, a button can be set to occupy 10% of the parent's space.
      *
-     * Setting the height makes the width change too.
+     * Setting the height makes the width change accordingly.
      */
     public final void setHeight(float height)
     {
-        float amount = menuParent.getHeight() * height / getHeight();
+        float amount = menuParent.getLocalHeight() * height / getHeight();
         scale(amount);
-        setLocalTranslation(getLocalTranslation().mult(amount));
+        //setLocalTranslation(getLocalTranslation().mult(amount));
     }
 
     public void setPosition(Vector2f v)
     {
-        setLocalTranslation(v.x, v.y, 0);
+        setLocalTranslation(v.x * menuParent.getLocalWidth(), v.y * menuParent.getLocalHeight(), 0);
     }
 
     /**
@@ -118,15 +132,13 @@ public abstract class MenuElement extends Node
         if (menuMaterial != null)
         {
             return menuMaterial;
-        }
-        else
+        } else
         {
             // If the element itself has no material, return the parent, null if no parent.
             if (menuParent != null)
             {
                 return menuParent.getMenuMaterial();
-            }
-            else
+            } else
             {
                 return null;
             }
@@ -197,15 +209,13 @@ public abstract class MenuElement extends Node
         if (menuFont != null)
         {
             return menuFont;
-        }
-        else
+        } else
         {
             // If the element itself has no material, return the parent, null if no parent.
             if (menuParent != null)
             {
                 return menuParent.getMenuFont();
-            }
-            else
+            } else
             {
                 return null;
             }
@@ -230,8 +240,7 @@ public abstract class MenuElement extends Node
         {
             // On enabling again:
             rotate(0, -FastMath.QUARTER_PI, 0);
-        }
-        else
+        } else
         {
             // On disabling:
             rotate(0, FastMath.QUARTER_PI, 0);
