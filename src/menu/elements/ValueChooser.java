@@ -65,7 +65,7 @@ public class ValueChooser<T> extends Label
 
         float height = super.getLocalHeight();
         float width = super.getLocalWidth();
-        float extrusion = extruded?getLocalDepth():0;
+        float extrusion = extruded ? getLocalDepth() : 0;
 
         if (vertical)
         {
@@ -165,12 +165,37 @@ public class ValueChooser<T> extends Label
         refresh();
     }
 
-    @Override
-    public void setMaterial(Material mat)
-    {
-        super.setMaterial(mat);
+    /* @Override
+     public void setMaterial(Material mat)
+     {
+     super.setMaterial(mat);
 
-        //  wedge1.setMaterial(mat);
-        // wedge2.setMaterial(mat);
+     //  wedge1.setMaterial(mat);
+     // wedge2.setMaterial(mat);
+     }*/
+    @Override
+    public float getLocalWidth()
+    {
+        if (vertical)
+        {
+            return super.getLocalHeight();
+        }
+        else
+        {
+            return 2 * wedgeSize / 3 + 2 * spacing + super.getLocalWidth();
+        }
+    }
+
+    @Override
+    public float getLocalHeight()
+    {
+        if (vertical)
+        {
+            return 2 * wedgeSize / 3 + 2 * spacing + super.getLocalHeight();
+        }
+        else
+        {
+            return super.getLocalWidth();
+        }
     }
 }
