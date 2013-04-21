@@ -15,12 +15,22 @@ public class Carousel<T extends Spatial> extends MenuElement
 {
     private ArrayList<T> elements = new ArrayList<>();
     private float radius = 2f;
+    private float itemSize = 2f;
     private int currentIndex = 0;
     private boolean horizontal = true;
 
-    public Carousel(boolean horizontal)
+    /**
+     * Creates a carousel that can hold nodes, and select one of them.
+     *
+     * @param horizontal If this is true, the carousel will rotate around the Y
+     * axis; else around X.
+     * @param itemSize The maximum radius, in pixel, of the items that will be
+     * selectionnable.
+     */
+    public Carousel(boolean horizontal, float itemSize)
     {
         this.horizontal = horizontal;
+        this.itemSize = itemSize;
         //Push the node back so that the front node will end up at Z = 0.
         setLocalTranslation(0, 0, -radius);
     }
@@ -110,12 +120,12 @@ public class Carousel<T extends Spatial> extends MenuElement
             // Finally, rotate the carousel towards the front.
             if (horizontal)
             {
-                rotate(0,angleTarget * tpf * 5, 0);
+                rotate(0, angleTarget * tpf * 5, 0);
             }
             else
             {
-                 rotate(angleTarget * tpf * 5, 0, 0);
-            }    
+                rotate(angleTarget * tpf * 5, 0, 0);
+            }
         }
 
         // Rotate the active node.
@@ -150,23 +160,36 @@ public class Carousel<T extends Spatial> extends MenuElement
         }
     }
 
-
     @Override
     public float getLocalWidth()
-    {//TODO
-        return 0.1f;
+    {
+        if (horizontal)
+        {
+            return radius + 2 * itemSize;
+        }
+        else
+        {
+            return 2 * itemSize;
+        }
     }
 
     @Override
     public float getLocalHeight()
     {
-        return getRadius();
+        if (horizontal)
+        {
+            return 2 * itemSize;
+        }
+        else
+        {
+            return radius + 2 * itemSize;
+        }
     }
 
     @Override
     public float getLocalDepth()
     {
-         return getRadius();
+        return radius + 2 * itemSize;
     }
 
     /**

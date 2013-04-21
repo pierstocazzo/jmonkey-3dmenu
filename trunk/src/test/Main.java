@@ -59,18 +59,19 @@ public class Main extends SimpleApplication
         // Add a title label.
         Label label = new Label("3D Menu Demo");
         mainPanel.add(label);
-        label.setSize(1, 1);
-        label.setPosition(new Vector2f(0f, 0f));
+        label.setHeight(0.1f);
+        label.setPosition(new Vector2f(0.5f, 0.88f));
+        label.getLocalTranslation().x -= label.getWidth() / 2;
 
 
         // Add two panels. The first will trigger a transition to the second.
-        final Panel panel1 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(0.5f, 0.5f));
-        final Panel panel2 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(0.5f, 0.5f));
+        final Panel panel1 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(1f, 0.8f));
+        final Panel panel2 = mainPanel.createSubPanel(new Vector2f(0, 0), new Vector2f(1f, 0.8f));
         mainPanel.add(panel1);
-        // panel1.setLocalTranslation(-2f, 0, 0);
+        
 
         // Add a carousel to the right.
-        Carousel<Node> carousel = new Carousel<>(true);
+        Carousel<Node> carousel = new Carousel<>(true, 0.5f);
         // Add 3 boxes to the carousel.
         for (char c : "Carousel".toCharArray())
         {
@@ -86,10 +87,11 @@ public class Main extends SimpleApplication
             node.attachChild(node);
             carousel.addElements(node);
         }
-        carousel.setLocalTranslation(2f, 0, 0);
+        //carousel.setLocalTranslation(2f, 0, 0);
         panel1.add(carousel);
+        carousel.setWidth(1f);
+      //  carousel.setPosition(new Vector2f(0.1f, 0.1f));
 
-        panel1.setMenuFont(Jme3DFont.standardFlatFont);
 
         // Also add a button to trigger a transition.
         Button button = new Button("Button test!");

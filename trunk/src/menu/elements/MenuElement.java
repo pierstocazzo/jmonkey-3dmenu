@@ -94,7 +94,8 @@ public abstract class MenuElement extends Node
      */
     public final float getWidth()
     {
-        return getLocalTransform().transformVector(new Vector3f(getLocalWidth(), 0, 0), null).x;
+        // return getLocalTransform().transformVector(new Vector3f(getLocalWidth(), 0, 0), null).x;
+        return getLocalWidth() * getLocalScale().x;
     }
 
     /**
@@ -102,7 +103,8 @@ public abstract class MenuElement extends Node
      */
     public final float getHeight()
     {
-        return getLocalTransform().transformVector(new Vector3f(0, getLocalHeight(), 0), null).y;
+       // return getLocalTransform().transformVector(new Vector3f(0, getLocalHeight(), 0), null).y;
+        return getLocalHeight() * getLocalScale().y;
     }
 
     /**
@@ -110,7 +112,8 @@ public abstract class MenuElement extends Node
      */
     public final float getDepth()
     {
-        return getLocalTransform().transformVector(new Vector3f(0, 0, getLocalHeight()), null).z;
+        // return getLocalTransform().transformVector(new Vector3f(0, 0, getLocalHeight()), null).z;
+        return getLocalDepth() * getLocalScale().z;
     }
 
     /**
